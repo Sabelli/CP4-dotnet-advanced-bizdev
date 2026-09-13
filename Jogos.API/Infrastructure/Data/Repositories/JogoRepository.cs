@@ -14,12 +14,12 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             _context = context;
         }
 
-        public JogoEntity? Adicionar(JogoEntity entity)
+        public async Task<JogoEntity?> AdicionarAsync(JogoEntity entity)
         {
             try
             {
                 _context.Jogo.Add(entity);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return entity;
             }
@@ -29,17 +29,17 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public JogoEntity? Deletar(int Id)
+        public async Task<JogoEntity?> DeletarAsync(int Id)
         {
             try
             {
-                var jogo = _context.Jogo.FirstOrDefault(x => x.Id == Id);
+                var jogo = await _context.Jogo.FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (jogo is null)
                     return null;
 
                 _context.Jogo.Remove(jogo);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return jogo;
             }
@@ -49,14 +49,11 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public JogoEntity? Editar(int Id, JogoEntity entity)
+        public async Task<JogoEntity?> EditarAsync(int Id, JogoEntity entity)
         {
             try
             {
-                var jogo = _context
-                    .Jogo
-                    .Include(x => x.Categorias)
-                    .FirstOrDefault(x => x.Id == Id);
+                var jogo = await _context.Jogo.FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (jogo is null)
                     return null;
@@ -68,7 +65,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 jogo.DesenvolvedoraId = entity.DesenvolvedoraId;
 
                 _context.Jogo.Update(jogo);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return jogo;
             }
@@ -110,18 +107,106 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public JogoEntity? ObterUm(int Id)
+        public async Task<JogoEntity?> ObterUmAsync(int Id)
         {
             try
             {
-                var jogo = _context
+                return await _context
                     .Jogo
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
-                    .FirstOrDefault(x => x.Id == Id);
+                    .FirstOrDefaultAsync(x => x.Id == Id);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
 
-                if (jogo is null)
+        public async Task<IEnumerable<JogoEntity>> ObterPorNomeAsync(string nome)
+        {
+            try
+            {
+                return await _context
+                    .Jogo
+                    .Include(x => x.Desenvolvedora)
+                    .Include(x => x.Categorias)
+                    .Where(x => x.Nome.Contains(nome))
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        public async Task<IEnumerable<JogoEntity>> ObterPorPlataformaAsync(string plataforma)
+        {
+            try
+            {
+                return await _context
+                    .Jogo
+                    .Include(x => x.Desenvolvedora)
+                    .Include(x => x.Categorias)
+                    .Where(x => x.Plataforma == plataforma)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        public async Task<IEnumerable<JogoEntity>> ObterPorDesenvolvedoraAsync(int idDesenvolvedora)
+        {
+            try
+            {
+                return await _context
+                    .Jogo
+                    .Include(x => x.Desenvolvedora)
+                    .Include(x => x.Categorias)
+                    .Where(x => x.DesenvolvedoraId == idDesenvolvedora)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        public async Task<IEnumerable<JogoEntity>> ObterPorCategoriaAsync(int idCategoria)
+        {
+            try
+            {
+                return await _context
+                    .Jogo
+                    .Include(x => x.Desenvolvedora)
+                    .Include(x => x.Categorias)
+                    .Where(x => x.Categorias!.Any(c => c.Id == idCategoria))
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        public async Task<JogoEntity?> VincularCategoriaAsync(int idJogo, int idCategoria)
+        {
+            try
+            {
+                var jogo = await _context.Jogo.Include(x => x.Categorias).FirstOrDefaultAsync(x => x.Id == idJogo);
+                var categoria = await _context.Categoria.FirstOrDefaultAsync(x => x.Id == idCategoria);
+
+                if (jogo is null || categoria is null)
                     return null;
+
+                jogo.Categorias ??= [];
+
+                if (!jogo.Categorias.Any(x => x.Id == idCategoria))
+                    jogo.Categorias.Add(categoria);
+
+                await _context.SaveChangesAsync();
 
                 return jogo;
             }

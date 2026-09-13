@@ -16,19 +16,19 @@ namespace Jogos.API.Application.UseCases
             _desenvolvedoraRepository = desenvolvedoraRepository;
         }
 
-        public DesenvolvedoraEntity? AdicionarDesenvolvedora(DesenvolvedoraRequestDto entity)
+        public async Task<DesenvolvedoraEntity?> AdicionarDesenvolvedoraAsync(DesenvolvedoraRequestDto entity)
         {
-            return _desenvolvedoraRepository.Adicionar(entity.ToDesenvolvedoraEntity());
+            return await _desenvolvedoraRepository.AdicionarAsync(entity.ToDesenvolvedoraEntity());
         }
 
-        public DesenvolvedoraEntity? DeletarDesenvolvedora(int Id)
+        public async Task<DesenvolvedoraEntity?> DeletarDesenvolvedoraAsync(int Id)
         {
-            return _desenvolvedoraRepository.Deletar(Id);
+            return await _desenvolvedoraRepository.DeletarAsync(Id);
         }
 
-        public DesenvolvedoraEntity? EditarDesenvolvedora(int Id, DesenvolvedoraRequestDto entity)
+        public async Task<DesenvolvedoraEntity?> EditarDesenvolvedoraAsync(int Id, DesenvolvedoraRequestDto entity)
         {
-            return _desenvolvedoraRepository.Editar(Id, entity.ToDesenvolvedoraEntity());
+            return await _desenvolvedoraRepository.EditarAsync(Id, entity.ToDesenvolvedoraEntity());
         }
 
         public async Task<PageResultModel<IEnumerable<DesenvolvedoraEntity>>> ObterTodosDesenvolvedorasAsync(int Deslocamento, int RegistroRetornado)
@@ -36,9 +36,9 @@ namespace Jogos.API.Application.UseCases
             return await _desenvolvedoraRepository.ObterTodosAsync(Deslocamento, RegistroRetornado);
         }
 
-        public DesenvolvedoraEntity? ObterUmaDesenvolvedora(int Id)
+        public async Task<DesenvolvedoraEntity?> ObterUmaDesenvolvedoraAsync(int Id)
         {
-            return _desenvolvedoraRepository.ObterUm(Id);
+            return await _desenvolvedoraRepository.ObterUmAsync(Id);
         }
     }
 }

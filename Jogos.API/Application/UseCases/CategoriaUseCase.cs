@@ -16,19 +16,19 @@ namespace Jogos.API.Application.UseCases
             _categoriaRepository = categoriaRepository;
         }
 
-        public CategoriaEntity? AdicionarCategoria(CategoriaRequestDto entity)
+        public async Task<CategoriaEntity?> AdicionarCategoriaAsync(CategoriaRequestDto entity)
         {
-            return _categoriaRepository.Adicionar(entity.ToCategoriaEntity());
+            return await _categoriaRepository.AdicionarAsync(entity.ToCategoriaEntity());
         }
 
-        public CategoriaEntity? DeletarCategoria(int Id)
+        public async Task<CategoriaEntity?> DeletarCategoriaAsync(int Id)
         {
-            return _categoriaRepository.Deletar(Id);
+            return await _categoriaRepository.DeletarAsync(Id);
         }
 
-        public CategoriaEntity? EditarCategoria(int Id, CategoriaRequestDto entity)
+        public async Task<CategoriaEntity?> EditarCategoriaAsync(int Id, CategoriaRequestDto entity)
         {
-            return _categoriaRepository.Editar(Id, entity.ToCategoriaEntity());
+            return await _categoriaRepository.EditarAsync(Id, entity.ToCategoriaEntity());
         }
 
         public async Task<PageResultModel<IEnumerable<CategoriaEntity>>> ObterTodosCategoriasAsync(int Deslocamento, int RegistroRetornado)
@@ -36,9 +36,9 @@ namespace Jogos.API.Application.UseCases
             return await _categoriaRepository.ObterTodosAsync(Deslocamento, RegistroRetornado);
         }
 
-        public CategoriaEntity? ObterUmaCategoria(int Id)
+        public async Task<CategoriaEntity?> ObterUmaCategoriaAsync(int Id)
         {
-            return _categoriaRepository.ObterUm(Id);
+            return await _categoriaRepository.ObterUmAsync(Id);
         }
     }
 }

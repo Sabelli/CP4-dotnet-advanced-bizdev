@@ -14,12 +14,12 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             _context = context;
         }
 
-        public DesenvolvedoraEntity? Adicionar(DesenvolvedoraEntity entity)
+        public async Task<DesenvolvedoraEntity?> AdicionarAsync(DesenvolvedoraEntity entity)
         {
             try
             {
                 _context.Desenvolvedora.Add(entity);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return entity;
             }
@@ -29,17 +29,17 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public DesenvolvedoraEntity? Deletar(int Id)
+        public async Task<DesenvolvedoraEntity?> DeletarAsync(int Id)
         {
             try
             {
-                var desenvolvedora = _context.Desenvolvedora.FirstOrDefault(x => x.Id == Id);
+                var desenvolvedora = await _context.Desenvolvedora.FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (desenvolvedora is null)
                     return null;
 
                 _context.Desenvolvedora.Remove(desenvolvedora);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return desenvolvedora;
             }
@@ -49,11 +49,11 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public DesenvolvedoraEntity? Editar(int Id, DesenvolvedoraEntity entity)
+        public async Task<DesenvolvedoraEntity?> EditarAsync(int Id, DesenvolvedoraEntity entity)
         {
             try
             {
-                var desenvolvedora = _context.Desenvolvedora.FirstOrDefault(x => x.Id == Id);
+                var desenvolvedora = await _context.Desenvolvedora.FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (desenvolvedora is null)
                     return null;
@@ -61,7 +61,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 desenvolvedora.Nome = entity.Nome;
 
                 _context.Desenvolvedora.Update(desenvolvedora);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return desenvolvedora;
             }
@@ -102,19 +102,14 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public DesenvolvedoraEntity? ObterUm(int Id)
+        public async Task<DesenvolvedoraEntity?> ObterUmAsync(int Id)
         {
             try
             {
-                var desenvolvedora = _context
+                return await _context
                     .Desenvolvedora
                     .Include(x => x.Jogos)
-                    .FirstOrDefault(x => x.Id == Id);
-
-                if (desenvolvedora is null)
-                    return null;
-
-                return desenvolvedora;
+                    .FirstOrDefaultAsync(x => x.Id == Id);
             }
             catch (Exception ex)
             {

@@ -1,0 +1,170 @@
+using Jogos.API.Application.Dtos;
+using Jogos.API.Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
+
+namespace Jogos.API.Presentation.Controllers
+{
+    [Route("api/categoria")]
+    [ApiController]
+    public class CategoriaController : ControllerBase
+    {
+        private readonly ICategoriaUseCase _categoriaUseCase;
+
+        public CategoriaController(ICategoriaUseCase categoriaUseCase)
+        {
+            _categoriaUseCase = categoriaUseCase;
+        }
+
+        [HttpGet]
+        [SwaggerOperation(
+            Summary = "Lista todas as categorias",
+            Description = """
+            ## Informações do Retorno:
+            * **Status 200 (OK):** Retorna uma lista paginada de categorias.
+            * **Status 204 (No Content):** Executado com sucesso, porém não há categorias cadastradas.
+            * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
+
+            ## Observações:
+            * Os dados incluem os **Jogos** relacionados a cada categoria.
+            """
+        )]
+        [SwaggerResponse(statusCode: 200, description: "Listagem retornada com sucesso")]
+        [SwaggerResponse(statusCode: 204, description: "Não há categorias cadastradas")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
+        public async Task<IActionResult> Get(int Deslocamento = 0, int RegistroRetornado = 10)
+        {
+            try
+            {
+                var resultado = await _categoriaUseCase.ObterTodosCategoriasAsync(Deslocamento, RegistroRetornado);
+
+                if (!resultado.Data.Any())
+                    return NoContent();
+
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}")]
+        [SwaggerOperation(
+            Summary = "Obter categoria por id",
+            Description = """
+            ## Informações do Retorno:
+            * **Status 200 (OK):** Retorna a categoria localizada.
+            * **Status 404 (Not Found):** Não foi encontrada categoria com o id informado.
+            * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
+
+            ## Observações:
+            * Os dados incluem os **Jogos** relacionados a essa categoria.
+            """
+        )]
+        [SwaggerResponse(statusCode: 200, description: "Categoria retornada com sucesso")]
+        [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
+        public async Task<IActionResult> Get(int id)
+        {
+            try
+            {
+                var categoria = await _categoriaUseCase.ObterUmaCategoriaAsync(id);
+
+                if (categoria is null)
+                    return NotFound();
+
+                return Ok(categoria);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [SwaggerOperation(
+            Summary = "Adicionar categoria",
+            Description = """
+            ## Informações do Retorno:
+            * **Status 201 (Created):** Categoria criada com sucesso.
+            * **Status 400 (Bad Request):** Ocorreu uma falha ao criar a categoria (ex: dados inválidos).
+            """
+        )]
+        [SwaggerResponse(statusCode: 201, description: "Categoria criada com sucesso")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar a categoria")]
+        public async Task<IActionResult> Post(CategoriaRequestDto model)
+        {
+            try
+            {
+                var categoria = await _categoriaUseCase.AdicionarCategoriaAsync(model);
+
+                return CreatedAtAction(nameof(Get), new { id = categoria?.Id ?? 0 }, model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("{id}")]
+        [SwaggerOperation(
+            Summary = "Editar categoria",
+            Description = """
+            ## Informações do Retorno:
+            * **Status 200 (OK):** Categoria editada com sucesso.
+            * **Status 404 (Not Found):** Não foi encontrada categoria com o id informado.
+            * **Status 400 (Bad Request):** Ocorreu uma falha ao editar a categoria.
+            """
+        )]
+        [SwaggerResponse(statusCode: 200, description: "Categoria editada com sucesso")]
+        [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar a categoria")]
+        public async Task<IActionResult> Put(int id, CategoriaRequestDto model)
+        {
+            try
+            {
+                var categoria = await _categoriaUseCase.EditarCategoriaAsync(id, model);
+
+                if (categoria is null)
+                    return NotFound();
+
+                return Ok(categoria);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [SwaggerOperation(
+            Summary = "Deletar categoria",
+            Description = """
+            ## Informações do Retorno:
+            * **Status 200 (OK):** Categoria deletada com sucesso.
+            * **Status 404 (Not Found):** Não foi encontrada categoria com o id informado.
+            * **Status 400 (Bad Request):** Ocorreu uma falha ao deletar a categoria.
+            """
+        )]
+        [SwaggerResponse(statusCode: 200, description: "Categoria deletada com sucesso")]
+        [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar a categoria")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var categoria = await _categoriaUseCase.DeletarCategoriaAsync(id);
+
+                if (categoria is null)
+                    return NotFound();
+
+                return Ok(categoria);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+    }
+}

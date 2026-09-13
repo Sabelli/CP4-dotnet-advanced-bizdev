@@ -14,12 +14,12 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             _context = context;
         }
 
-        public CategoriaEntity? Adicionar(CategoriaEntity entity)
+        public async Task<CategoriaEntity?> AdicionarAsync(CategoriaEntity entity)
         {
             try
             {
                 _context.Categoria.Add(entity);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return entity;
             }
@@ -29,17 +29,17 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public CategoriaEntity? Deletar(int Id)
+        public async Task<CategoriaEntity?> DeletarAsync(int Id)
         {
             try
             {
-                var categoria = _context.Categoria.FirstOrDefault(x => x.Id == Id);
+                var categoria = await _context.Categoria.FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (categoria is null)
                     return null;
 
                 _context.Categoria.Remove(categoria);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return categoria;
             }
@@ -49,11 +49,11 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public CategoriaEntity? Editar(int Id, CategoriaEntity entity)
+        public async Task<CategoriaEntity?> EditarAsync(int Id, CategoriaEntity entity)
         {
             try
             {
-                var categoria = _context.Categoria.FirstOrDefault(x => x.Id == Id);
+                var categoria = await _context.Categoria.FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (categoria is null)
                     return null;
@@ -61,7 +61,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 categoria.Nome = entity.Nome;
 
                 _context.Categoria.Update(categoria);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return categoria;
             }
@@ -102,19 +102,14 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public CategoriaEntity? ObterUm(int Id)
+        public async Task<CategoriaEntity?> ObterUmAsync(int Id)
         {
             try
             {
-                var categoria = _context
+                return await _context
                     .Categoria
                     .Include(x => x.Jogos)
-                    .FirstOrDefault(x => x.Id == Id);
-
-                if (categoria is null)
-                    return null;
-
-                return categoria;
+                    .FirstOrDefaultAsync(x => x.Id == Id);
             }
             catch (Exception ex)
             {

@@ -6,9 +6,9 @@ namespace Jogos.API.Domain.Interfaces
     public interface ICategoriaRepository
     {
         Task<PageResultModel<IEnumerable<CategoriaEntity>>> ObterTodosAsync(int Deslocamento, int RegistroRetornado);
-        CategoriaEntity? ObterUm(int Id);
-        CategoriaEntity? Adicionar(CategoriaEntity entity);
-        CategoriaEntity? Editar(int Id, CategoriaEntity entity);
-        CategoriaEntity? Deletar(int Id);
+        Task<CategoriaEntity?> ObterUmAsync(int Id);
+        Task<CategoriaEntity?> AdicionarAsync(CategoriaEntity entity);
+        Task<CategoriaEntity?> EditarAsync(int Id, CategoriaEntity entity);
+        Task<CategoriaEntity?> DeletarAsync(int Id);
     }
 }
