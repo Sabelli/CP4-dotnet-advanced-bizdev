@@ -4,8 +4,8 @@ namespace Jogos.API.Application.Dtos
 {
     public class DesenvolvedoraRequestDto
     {
-        [Required]
-        [StringLength(100, MinimumLength = 3)]
+        [Required(ErrorMessage = "O nome da desenvolvedora é obrigatório")]
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "O nome da desenvolvedora deve ter entre 3 e 100 caracteres")]
         public string Nome { get; set; }
     }
 }

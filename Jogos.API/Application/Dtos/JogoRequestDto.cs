@@ -4,14 +4,14 @@ namespace Jogos.API.Application.Dtos
 {
     public class JogoRequestDto
     {
-        [Required]
-        [StringLength(100, MinimumLength = 3)]
+        [Required(ErrorMessage = "O nome do jogo é obrigatório")]
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "O nome do jogo deve ter entre 3 e 100 caracteres")]
         public string Nome { get; set; }
         public double Preco { get; set; }
-        [Required]
+        [Required(ErrorMessage = "A plataforma do jogo é obrigatória")]
         public string Plataforma { get; set; }
         public DateTime DataLancamento { get; set; }
-        [Required]
+        [Required(ErrorMessage = "A desenvolvedora do jogo é obrigatória")]
         public int DesenvolvedoraId { get; set; }
     }
 }
