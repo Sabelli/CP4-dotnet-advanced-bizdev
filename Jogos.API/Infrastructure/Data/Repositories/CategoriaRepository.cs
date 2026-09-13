@@ -1,5 +1,6 @@
 using Jogos.API.Domain.Entities;
 using Jogos.API.Domain.Interfaces;
+using Jogos.API.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Jogos.API.Infrastructure.Data.Repositories
@@ -70,12 +71,14 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<IEnumerable<CategoriaEntity>> ObterTodosAsync(int Deslocamento = 0, int RegistroRetornado = 30)
+        public async Task<PageResultModel<IEnumerable<CategoriaEntity>>> ObterTodosAsync(int Deslocamento = 0, int RegistroRetornado = 30)
         {
             try
             {
                 if (Deslocamento < 0) Deslocamento = 0;
                 if (RegistroRetornado <= 0) RegistroRetornado = 30;
+
+                var totalRegistros = await _context.Categoria.CountAsync();
 
                 var resultado = await _context
                     .Categoria
@@ -85,10 +88,13 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     .Take(RegistroRetornado)
                     .ToListAsync();
 
-                if (!resultado.Any())
-                    return Enumerable.Empty<CategoriaEntity>();
-
-                return resultado;
+                return new PageResultModel<IEnumerable<CategoriaEntity>>
+                {
+                    Data = resultado,
+                    Deslocamento = Deslocamento,
+                    RegistroRetornado = RegistroRetornado,
+                    TotalRegistros = totalRegistros
+                };
             }
             catch (Exception ex)
             {
