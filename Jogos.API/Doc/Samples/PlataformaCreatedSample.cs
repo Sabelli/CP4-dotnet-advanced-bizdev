@@ -3,14 +3,14 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace Jogos.API.Doc.Samples
 {
-    public class CategoriaResponseSample : IExamplesProvider<CategoriaEntity>
+    public class PlataformaCreatedSample : IExamplesProvider<PlataformaEntity>
     {
-        public CategoriaEntity GetExamples()
+        public PlataformaEntity GetExamples()
         {
-            return new CategoriaEntity
+            return new PlataformaEntity
             {
                 Id = 1,
-                Nome = "RPG"
+                Nome = "PC"
             };
         }
     }

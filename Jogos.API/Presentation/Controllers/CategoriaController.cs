@@ -30,9 +30,6 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 200 (OK):** Retorna uma lista paginada de categorias.
             * **Status 204 (No Content):** Executado com sucesso, porém não há categorias cadastradas.
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
-
-            ## Observações:
-            * Os dados incluem os **Jogos** relacionados a cada categoria.
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<CategoriaEntity>))]
@@ -68,9 +65,6 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 200 (OK):** Retorna a categoria localizada.
             * **Status 404 (Not Found):** Não foi encontrada categoria com o id informado.
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
-
-            ## Observações:
-            * Os dados incluem os **Jogos** relacionados a essa categoria.
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Categoria retornada com sucesso", type: typeof(CategoriaEntity))]

@@ -87,7 +87,6 @@ namespace Jogos.API.Infrastructure.Data.Repositories
 
                 var resultado = await _context
                     .Desenvolvedora
-                    .Include(x => x.Jogos)
                     .OrderBy(x => x.Id)
                     .Skip(Deslocamento)
                     .Take(RegistroRetornado)
@@ -113,7 +112,6 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             {
                 return await _context
                     .Desenvolvedora
-                    .Include(x => x.Jogos)
                     .FirstOrDefaultAsync(x => x.Id == Id);
             }
             catch (Exception ex)

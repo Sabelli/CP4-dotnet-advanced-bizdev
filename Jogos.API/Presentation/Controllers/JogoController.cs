@@ -32,7 +32,7 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
 
             ## Observações:
-            * Os dados incluem as entidades relacionadas (**Desenvolvedora** e **Categorias**).
+            * Os dados incluem as entidades relacionadas (**Desenvolvedora**, **Categorias** e **Plataformas**).
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<JogoEntity>))]
@@ -70,7 +70,7 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
 
             ## Observações:
-            * Os dados incluem as entidades relacionadas (**Desenvolvedora** e **Categorias**).
+            * Os dados incluem as entidades relacionadas (**Desenvolvedora**, **Categorias** e **Plataformas**).
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Jogo retornado com sucesso", type: typeof(JogoEntity))]
@@ -110,7 +110,7 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
 
             ## Observações:
-            * Os dados incluem as entidades relacionadas (**Desenvolvedora** e **Categorias**).
+            * Os dados incluem as entidades relacionadas (**Desenvolvedora**, **Categorias** e **Plataformas**).
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<JogoEntity>))]
@@ -143,12 +143,12 @@ namespace Jogos.API.Presentation.Controllers
             Summary = "Lista jogos filtrando pela plataforma",
             Description = """
             ## Informações do Retorno:
-            * **Status 200 (OK):** Retorna os jogos disponíveis na plataforma informada.
+            * **Status 200 (OK):** Retorna os jogos disponíveis na plataforma informada (busca pelo nome da plataforma).
             * **Status 204 (No Content):** Executado com sucesso, porém nenhum jogo encontrado nessa plataforma.
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
 
             ## Observações:
-            * Os dados incluem as entidades relacionadas (**Desenvolvedora** e **Categorias**).
+            * Um jogo pode ter várias plataformas (relação **N:N**). Os dados incluem as entidades relacionadas (**Desenvolvedora**, **Categorias** e **Plataformas**).
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<JogoEntity>))]
@@ -186,7 +186,7 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
 
             ## Observações:
-            * Os dados incluem as entidades relacionadas (**Desenvolvedora** e **Categorias**).
+            * Os dados incluem as entidades relacionadas (**Desenvolvedora**, **Categorias** e **Plataformas**).
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<JogoEntity>))]
@@ -224,7 +224,7 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
 
             ## Observações:
-            * Os dados incluem as entidades relacionadas (**Desenvolvedora** e **Categorias**).
+            * Os dados incluem as entidades relacionadas (**Desenvolvedora**, **Categorias** e **Plataformas**).
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<JogoEntity>))]
@@ -258,15 +258,16 @@ namespace Jogos.API.Presentation.Controllers
             Description = """
             ## Informações do Retorno:
             * **Status 201 (Created):** Jogo criado com sucesso.
+            * **Status 409 (Conflict):** Já existe um jogo com esse nome.
             * **Status 400 (Bad Request):** Ocorreu uma falha ao criar o jogo (ex: dados inválidos, desenvolvedora inexistente).
 
             ## Observações:
-            * A vinculação com **Categorias** é feita separadamente pelo endpoint `POST /api/jogo/categoria/{idJogo}/{idCategoria}`.
+            * `CategoriaIds`/`PlataformaIds` são opcionais e vinculam categorias/plataformas já existentes no momento da criação. Pra vincular/desvincular depois, use os endpoints `POST`/`DELETE /api/jogo/categoria/{idJogo}/{idCategoria}` e `POST`/`DELETE /api/jogo/plataforma/{idJogo}/{idPlataforma}`.
             """
         )]
         [SwaggerRequestExample(typeof(JogoRequestDto), typeof(JogoRequestSample))]
         [SwaggerResponse(statusCode: 201, description: "Jogo criado com sucesso", type: typeof(JogoEntity))]
-        [SwaggerResponse(statusCode: 409, description: "Já existe um jogo com esse nome nessa plataforma", type: typeof(string))]
+        [SwaggerResponse(statusCode: 409, description: "Já existe um jogo com esse nome", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar o jogo", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 201, typeof(JogoCreatedSample))]
         public async Task<IActionResult> Post(JogoRequestDto model)
@@ -279,8 +280,8 @@ namespace Jogos.API.Presentation.Controllers
 
                 if (jogo is null)
                 {
-                    _logger.LogWarning("Jogo {Nome} já existe na plataforma {Plataforma}", model.Nome, model.Plataforma);
-                    return Conflict($"Já existe um jogo com o nome '{model.Nome}' na plataforma '{model.Plataforma}'.");
+                    _logger.LogWarning("Jogo {Nome} já existe", model.Nome);
+                    return Conflict($"Já existe um jogo com o nome '{model.Nome}'.");
                 }
 
                 return CreatedAtAction(nameof(Get), new { id = jogo.Id }, jogo);
@@ -300,6 +301,9 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 200 (OK):** Jogo editado com sucesso.
             * **Status 404 (Not Found):** Não foi encontrado jogo com o id informado.
             * **Status 400 (Bad Request):** Ocorreu uma falha ao editar o jogo.
+
+            ## Observações:
+            * `CategoriaIds`/`PlataformaIds` do corpo são ignorados na edição — use os endpoints de vínculo/desvínculo pra alterar essas relações.
             """
         )]
         [SwaggerRequestExample(typeof(JogoRequestDto), typeof(JogoRequestSample))]
@@ -403,6 +407,126 @@ namespace Jogos.API.Presentation.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao vincular categoria {CategoriaId} ao jogo {JogoId}", idCategoria, idJogo);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("categoria/{idJogo}/{idCategoria}")]
+        [SwaggerOperation(
+            Summary = "Desvincular categoria de um jogo",
+            Description = """
+            ## Informações do Retorno:
+            * **Status 200 (OK):** Categoria desvinculada do jogo com sucesso.
+            * **Status 404 (Not Found):** Jogo não encontrado.
+            * **Status 400 (Bad Request):** Ocorreu uma falha ao desvincular a categoria.
+
+            ## Observações:
+            * Se a categoria não estiver vinculada, nada é alterado.
+            """
+        )]
+        [SwaggerResponse(statusCode: 200, description: "Categoria desvinculada com sucesso", type: typeof(JogoEntity))]
+        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao desvincular a categoria", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseSample))]
+        public async Task<IActionResult> DeleteCategoriaJogo(int idJogo, int idCategoria)
+        {
+            _logger.LogInformation("Desvinculando categoria {CategoriaId} do jogo {JogoId}", idCategoria, idJogo);
+
+            try
+            {
+                var jogo = await _jogoUseCase.DesvincularCategoriaAsync(idJogo, idCategoria);
+
+                if (jogo is null)
+                {
+                    _logger.LogWarning("Jogo {JogoId} não encontrado para desvínculo", idJogo);
+                    return NotFound();
+                }
+
+                return Ok(jogo);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao desvincular categoria {CategoriaId} do jogo {JogoId}", idCategoria, idJogo);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("plataforma/{idJogo}/{idPlataforma}")]
+        [SwaggerOperation(
+            Summary = "Vincular plataforma existente a um jogo",
+            Description = """
+            ## Informações do Retorno:
+            * **Status 200 (OK):** Plataforma vinculada ao jogo com sucesso.
+            * **Status 404 (Not Found):** Jogo ou plataforma não encontrados.
+            * **Status 400 (Bad Request):** Ocorreu uma falha ao vincular a plataforma.
+
+            ## Observações:
+            * Relação **N:N** entre Jogo e Plataforma (um jogo pode estar em várias plataformas). Se a plataforma já estiver vinculada, nada é alterado.
+            """
+        )]
+        [SwaggerResponse(statusCode: 200, description: "Plataforma vinculada com sucesso", type: typeof(JogoEntity))]
+        [SwaggerResponse(statusCode: 404, description: "Jogo ou plataforma não encontrados")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao vincular a plataforma", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseSample))]
+        public async Task<IActionResult> PostPlataformaJogo(int idJogo, int idPlataforma)
+        {
+            _logger.LogInformation("Vinculando plataforma {PlataformaId} ao jogo {JogoId}", idPlataforma, idJogo);
+
+            try
+            {
+                var jogo = await _jogoUseCase.VincularPlataformaAsync(idJogo, idPlataforma);
+
+                if (jogo is null)
+                {
+                    _logger.LogWarning("Jogo {JogoId} ou plataforma {PlataformaId} não encontrados para vínculo", idJogo, idPlataforma);
+                    return NotFound();
+                }
+
+                return Ok(jogo);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao vincular plataforma {PlataformaId} ao jogo {JogoId}", idPlataforma, idJogo);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("plataforma/{idJogo}/{idPlataforma}")]
+        [SwaggerOperation(
+            Summary = "Desvincular plataforma de um jogo",
+            Description = """
+            ## Informações do Retorno:
+            * **Status 200 (OK):** Plataforma desvinculada do jogo com sucesso.
+            * **Status 404 (Not Found):** Jogo não encontrado.
+            * **Status 400 (Bad Request):** Ocorreu uma falha ao desvincular a plataforma.
+
+            ## Observações:
+            * Se a plataforma não estiver vinculada, nada é alterado.
+            """
+        )]
+        [SwaggerResponse(statusCode: 200, description: "Plataforma desvinculada com sucesso", type: typeof(JogoEntity))]
+        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao desvincular a plataforma", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseSample))]
+        public async Task<IActionResult> DeletePlataformaJogo(int idJogo, int idPlataforma)
+        {
+            _logger.LogInformation("Desvinculando plataforma {PlataformaId} do jogo {JogoId}", idPlataforma, idJogo);
+
+            try
+            {
+                var jogo = await _jogoUseCase.DesvincularPlataformaAsync(idJogo, idPlataforma);
+
+                if (jogo is null)
+                {
+                    _logger.LogWarning("Jogo {JogoId} não encontrado para desvínculo", idJogo);
+                    return NotFound();
+                }
+
+                return Ok(jogo);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao desvincular plataforma {PlataformaId} do jogo {JogoId}", idPlataforma, idJogo);
                 return BadRequest(ex.Message);
             }
         }

@@ -5,15 +5,15 @@ using System.Text.Json.Serialization;
 
 namespace Jogos.API.Domain.Entities
 {
-    [Table("tb_categoria")]
-    [Index(nameof(Nome), IsUnique = true, Name = "IDX_categoria_nome")]
-    public class CategoriaEntity
+    [Table("tb_plataforma")]
+    [Index(nameof(Nome), IsUnique = true, Name = "IDX_plataforma_nome")]
+    public class PlataformaEntity
     {
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "O nome da categoria é obrigatório")]
-        [StringLength(100, MinimumLength = 3, ErrorMessage = "O nome da categoria deve ter entre 3 e 100 caracteres")]
+        [Required(ErrorMessage = "O nome da plataforma é obrigatório")]
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "O nome da plataforma deve ter entre 3 e 100 caracteres")]
         [Column("c_nome")]
         public string Nome { get; set; }
 

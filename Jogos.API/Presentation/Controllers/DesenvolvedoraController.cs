@@ -30,9 +30,6 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 200 (OK):** Retorna uma lista paginada de desenvolvedoras.
             * **Status 204 (No Content):** Executado com sucesso, porém não há desenvolvedoras cadastradas.
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
-
-            ## Observações:
-            * Os dados incluem os **Jogos** relacionados a cada desenvolvedora.
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<DesenvolvedoraEntity>))]
@@ -68,9 +65,6 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 200 (OK):** Retorna a desenvolvedora localizada.
             * **Status 404 (Not Found):** Não foi encontrada desenvolvedora com o id informado.
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
-
-            ## Observações:
-            * Os dados incluem os **Jogos** relacionados a essa desenvolvedora.
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Desenvolvedora retornada com sucesso", type: typeof(DesenvolvedoraEntity))]

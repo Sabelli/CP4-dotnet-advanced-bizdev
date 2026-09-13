@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Jogos.API.Domain.Entities
 {
@@ -16,6 +17,7 @@ namespace Jogos.API.Domain.Entities
         [Column("c_nome")]
         public string Nome { get; set; }
 
+        [JsonIgnore]
         public ICollection<JogoEntity>? Jogos { get; set; }
     }
 }

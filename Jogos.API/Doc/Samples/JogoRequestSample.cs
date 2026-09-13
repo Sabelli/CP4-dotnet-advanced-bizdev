@@ -11,9 +11,10 @@ namespace Jogos.API.Doc.Samples
             {
                 Nome = "The Witcher 3",
                 Preco = 59.99,
-                Plataforma = "PC",
                 DataLancamento = new DateTime(2015, 5, 19),
-                DesenvolvedoraId = 1
+                DesenvolvedoraId = 1,
+                CategoriaIds = new List<int> { 1, 2 },
+                PlataformaIds = new List<int> { 1, 2 }
             };
         }
     }

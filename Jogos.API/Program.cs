@@ -38,6 +38,8 @@ builder.Services.AddTransient<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddTransient<ICategoriaUseCase, CategoriaUseCase>();
 builder.Services.AddTransient<IDesenvolvedoraRepository, DesenvolvedoraRepository>();
 builder.Services.AddTransient<IDesenvolvedoraUseCase, DesenvolvedoraUseCase>();
+builder.Services.AddTransient<IPlataformaRepository, PlataformaRepository>();
+builder.Services.AddTransient<IPlataformaUseCase, PlataformaUseCase>();
 builder.Services.AddTransient<IJogoRepository, JogoRepository>();
 builder.Services.AddTransient<IJogoUseCase, JogoUseCase>();
 

@@ -16,5 +16,8 @@ namespace Jogos.API.Application.Interfaces
         Task<JogoEntity?> EditarJogoAsync(int Id, JogoRequestDto entity);
         Task<JogoEntity?> DeletarJogoAsync(int Id);
         Task<JogoEntity?> VincularCategoriaAsync(int idJogo, int idCategoria);
+        Task<JogoEntity?> DesvincularCategoriaAsync(int idJogo, int idCategoria);
+        Task<JogoEntity?> VincularPlataformaAsync(int idJogo, int idPlataforma);
+        Task<JogoEntity?> DesvincularPlataformaAsync(int idJogo, int idPlataforma);
     }
 }

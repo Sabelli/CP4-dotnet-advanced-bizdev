@@ -11,7 +11,6 @@ namespace Jogos.API.Application.Mappers
             {
                 Nome = obj.Nome,
                 Preco = obj.Preco,
-                Plataforma = obj.Plataforma,
                 DataLancamento = obj.DataLancamento,
                 DesenvolvedoraId = obj.DesenvolvedoraId
             };

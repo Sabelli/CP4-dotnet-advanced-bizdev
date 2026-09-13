@@ -12,6 +12,7 @@ namespace Jogos.API.Infrastructure.Data
 
         public DbSet<CategoriaEntity> Categoria { get; set; }
         public DbSet<DesenvolvedoraEntity> Desenvolvedora { get; set; }
+        public DbSet<PlataformaEntity> Plataforma { get; set; }
         public DbSet<JogoEntity> Jogo { get; set; }
     }
 }

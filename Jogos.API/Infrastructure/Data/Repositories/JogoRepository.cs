@@ -14,14 +14,20 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             _context = context;
         }
 
-        public async Task<JogoEntity?> AdicionarAsync(JogoEntity entity)
+        public async Task<JogoEntity?> AdicionarAsync(JogoEntity entity, IEnumerable<int>? categoriaIds, IEnumerable<int>? plataformaIds)
         {
             try
             {
-                var existe = await _context.Jogo.CountAsync(x => x.Nome.ToUpper() == entity.Nome.ToUpper() && x.Plataforma.ToUpper() == entity.Plataforma.ToUpper()) > 0;
+                var existe = await _context.Jogo.CountAsync(x => x.Nome.ToUpper() == entity.Nome.ToUpper()) > 0;
 
                 if (existe)
                     return null;
+
+                if (categoriaIds is not null && categoriaIds.Any())
+                    entity.Categorias = await _context.Categoria.Where(x => categoriaIds.Contains(x.Id)).ToListAsync();
+
+                if (plataformaIds is not null && plataformaIds.Any())
+                    entity.Plataformas = await _context.Plataforma.Where(x => plataformaIds.Contains(x.Id)).ToListAsync();
 
                 _context.Jogo.Add(entity);
                 await _context.SaveChangesAsync();
@@ -65,7 +71,6 @@ namespace Jogos.API.Infrastructure.Data.Repositories
 
                 jogo.Nome = entity.Nome;
                 jogo.Preco = entity.Preco;
-                jogo.Plataforma = entity.Plataforma;
                 jogo.DataLancamento = entity.DataLancamento;
                 jogo.DesenvolvedoraId = entity.DesenvolvedoraId;
 
@@ -93,6 +98,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     .Jogo
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
+                    .Include(x => x.Plataformas)
                     .OrderBy(x => x.Id)
                     .Skip(Deslocamento)
                     .Take(RegistroRetornado)
@@ -120,6 +126,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     .Jogo
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
+                    .Include(x => x.Plataformas)
                     .FirstOrDefaultAsync(x => x.Id == Id);
             }
             catch (Exception ex)
@@ -139,6 +146,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     .Jogo
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
+                    .Include(x => x.Plataformas)
                     .Where(x => x.Nome.Contains(nome))
                     .OrderBy(x => x.Id)
                     .Skip(Deslocamento)
@@ -162,7 +170,8 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     .Jogo
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
-                    .Where(x => x.Plataforma == plataforma)
+                    .Include(x => x.Plataformas)
+                    .Where(x => x.Plataformas!.Any(p => p.Nome.ToUpper() == plataforma.ToUpper()))
                     .OrderBy(x => x.Id)
                     .Skip(Deslocamento)
                     .Take(RegistroRetornado)
@@ -185,6 +194,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     .Jogo
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
+                    .Include(x => x.Plataformas)
                     .Where(x => x.DesenvolvedoraId == idDesenvolvedora)
                     .OrderBy(x => x.Id)
                     .Skip(Deslocamento)
@@ -208,6 +218,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     .Jogo
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
+                    .Include(x => x.Plataformas)
                     .Where(x => x.Categorias!.Any(c => c.Id == idCategoria))
                     .OrderBy(x => x.Id)
                     .Skip(Deslocamento)
@@ -234,6 +245,79 @@ namespace Jogos.API.Infrastructure.Data.Repositories
 
                 if (!jogo.Categorias.Any(x => x.Id == idCategoria))
                     jogo.Categorias.Add(categoria);
+
+                await _context.SaveChangesAsync();
+
+                return jogo;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        public async Task<JogoEntity?> DesvincularCategoriaAsync(int idJogo, int idCategoria)
+        {
+            try
+            {
+                var jogo = await _context.Jogo.Include(x => x.Categorias).FirstOrDefaultAsync(x => x.Id == idJogo);
+
+                if (jogo is null)
+                    return null;
+
+                var categoria = jogo.Categorias?.FirstOrDefault(x => x.Id == idCategoria);
+
+                if (categoria is not null)
+                    jogo.Categorias!.Remove(categoria);
+
+                await _context.SaveChangesAsync();
+
+                return jogo;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        public async Task<JogoEntity?> VincularPlataformaAsync(int idJogo, int idPlataforma)
+        {
+            try
+            {
+                var jogo = await _context.Jogo.Include(x => x.Plataformas).FirstOrDefaultAsync(x => x.Id == idJogo);
+                var plataforma = await _context.Plataforma.FirstOrDefaultAsync(x => x.Id == idPlataforma);
+
+                if (jogo is null || plataforma is null)
+                    return null;
+
+                jogo.Plataformas ??= [];
+
+                if (!jogo.Plataformas.Any(x => x.Id == idPlataforma))
+                    jogo.Plataformas.Add(plataforma);
+
+                await _context.SaveChangesAsync();
+
+                return jogo;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        public async Task<JogoEntity?> DesvincularPlataformaAsync(int idJogo, int idPlataforma)
+        {
+            try
+            {
+                var jogo = await _context.Jogo.Include(x => x.Plataformas).FirstOrDefaultAsync(x => x.Id == idJogo);
+
+                if (jogo is null)
+                    return null;
+
+                var plataforma = jogo.Plataformas?.FirstOrDefault(x => x.Id == idPlataforma);
+
+                if (plataforma is not null)
+                    jogo.Plataformas!.Remove(plataforma);
 
                 await _context.SaveChangesAsync();
 

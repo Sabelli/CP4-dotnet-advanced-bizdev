@@ -12,7 +12,6 @@ namespace Jogos.API.Doc.Samples
                 Id = 1,
                 Nome = "The Witcher 3",
                 Preco = 59.99,
-                Plataforma = "PC",
                 DataLancamento = new DateTime(2015, 5, 19),
                 DesenvolvedoraId = 1,
                 Desenvolvedora = new DesenvolvedoraEntity { Id = 1, Nome = "CD Projekt Red" },
@@ -20,6 +19,11 @@ namespace Jogos.API.Doc.Samples
                 {
                     new CategoriaEntity { Id = 1, Nome = "RPG" },
                     new CategoriaEntity { Id = 2, Nome = "Ação" },
+                },
+                Plataformas = new List<PlataformaEntity>
+                {
+                    new PlataformaEntity { Id = 1, Nome = "PC" },
+                    new PlataformaEntity { Id = 2, Nome = "PS5" },
                 }
             };
         }
