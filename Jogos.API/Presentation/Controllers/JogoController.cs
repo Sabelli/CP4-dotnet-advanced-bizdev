@@ -1,6 +1,7 @@
 using Jogos.API.Application.Dtos;
 using Jogos.API.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Jogos.API.Presentation.Controllers
@@ -32,7 +33,8 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 200, description: "Listagem retornada com sucesso")]
         [SwaggerResponse(statusCode: 204, description: "Não há jogos cadastrados")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
-        public async Task<IActionResult> Get(int Deslocamento = 0, int RegistroRetornado = 10)
+        [EnableRateLimiting("politica_5_tentativas")]
+        public async Task<IActionResult> Get(int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
@@ -98,11 +100,12 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 200, description: "Jogos retornados com sucesso")]
         [SwaggerResponse(statusCode: 204, description: "Nenhum jogo encontrado com esse nome")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
-        public async Task<IActionResult> GetAllJogosByNome(string nome)
+        [EnableRateLimiting("politica_5_tentativas")]
+        public async Task<IActionResult> GetAllJogosByNome(string nome, int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
-                var resultado = await _jogoUseCase.ObterJogosPorNomeAsync(nome);
+                var resultado = await _jogoUseCase.ObterJogosPorNomeAsync(nome, Deslocamento, RegistroRetornado);
 
                 if (!resultado.Any())
                     return NoContent();
@@ -131,11 +134,12 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 200, description: "Jogos retornados com sucesso")]
         [SwaggerResponse(statusCode: 204, description: "Nenhum jogo encontrado nessa plataforma")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
-        public async Task<IActionResult> GetAllJogosByPlataforma(string plataforma)
+        [EnableRateLimiting("politica_5_tentativas")]
+        public async Task<IActionResult> GetAllJogosByPlataforma(string plataforma, int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
-                var resultado = await _jogoUseCase.ObterJogosPorPlataformaAsync(plataforma);
+                var resultado = await _jogoUseCase.ObterJogosPorPlataformaAsync(plataforma, Deslocamento, RegistroRetornado);
 
                 if (!resultado.Any())
                     return NoContent();
@@ -164,11 +168,12 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 200, description: "Jogos retornados com sucesso")]
         [SwaggerResponse(statusCode: 204, description: "Nenhum jogo encontrado para essa desenvolvedora")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
-        public async Task<IActionResult> GetAllJogosByDesenvolvedora(int idDesenvolvedora)
+        [EnableRateLimiting("politica_5_tentativas")]
+        public async Task<IActionResult> GetAllJogosByDesenvolvedora(int idDesenvolvedora, int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
-                var resultado = await _jogoUseCase.ObterJogosPorDesenvolvedoraAsync(idDesenvolvedora);
+                var resultado = await _jogoUseCase.ObterJogosPorDesenvolvedoraAsync(idDesenvolvedora, Deslocamento, RegistroRetornado);
 
                 if (!resultado.Any())
                     return NoContent();
@@ -197,11 +202,12 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 200, description: "Jogos retornados com sucesso")]
         [SwaggerResponse(statusCode: 204, description: "Nenhum jogo encontrado para essa categoria")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
-        public async Task<IActionResult> GetAllJogosByCategoria(int idCategoria)
+        [EnableRateLimiting("politica_5_tentativas")]
+        public async Task<IActionResult> GetAllJogosByCategoria(int idCategoria, int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
-                var resultado = await _jogoUseCase.ObterJogosPorCategoriaAsync(idCategoria);
+                var resultado = await _jogoUseCase.ObterJogosPorCategoriaAsync(idCategoria, Deslocamento, RegistroRetornado);
 
                 if (!resultado.Any())
                     return NoContent();

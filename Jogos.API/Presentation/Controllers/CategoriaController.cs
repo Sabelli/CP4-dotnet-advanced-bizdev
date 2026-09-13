@@ -1,6 +1,7 @@
 using Jogos.API.Application.Dtos;
 using Jogos.API.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Jogos.API.Presentation.Controllers
@@ -32,7 +33,8 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 200, description: "Listagem retornada com sucesso")]
         [SwaggerResponse(statusCode: 204, description: "Não há categorias cadastradas")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
-        public async Task<IActionResult> Get(int Deslocamento = 0, int RegistroRetornado = 10)
+        [EnableRateLimiting("politica_5_tentativas")]
+        public async Task<IActionResult> Get(int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {

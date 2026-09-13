@@ -75,12 +75,12 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<PageResultModel<IEnumerable<JogoEntity>>> ObterTodosAsync(int Deslocamento = 0, int RegistroRetornado = 30)
+        public async Task<PageResultModel<IEnumerable<JogoEntity>>> ObterTodosAsync(int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
                 if (Deslocamento < 0) Deslocamento = 0;
-                if (RegistroRetornado <= 0) RegistroRetornado = 30;
+                if (RegistroRetornado <= 0) RegistroRetornado = 50;
 
                 var totalRegistros = await _context.Jogo.CountAsync();
 
@@ -123,15 +123,21 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterPorNomeAsync(string nome)
+        public async Task<IEnumerable<JogoEntity>> ObterPorNomeAsync(string nome, int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
+                if (Deslocamento < 0) Deslocamento = 0;
+                if (RegistroRetornado <= 0) RegistroRetornado = 50;
+
                 return await _context
                     .Jogo
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
                     .Where(x => x.Nome.Contains(nome))
+                    .OrderBy(x => x.Id)
+                    .Skip(Deslocamento)
+                    .Take(RegistroRetornado)
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -140,15 +146,21 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterPorPlataformaAsync(string plataforma)
+        public async Task<IEnumerable<JogoEntity>> ObterPorPlataformaAsync(string plataforma, int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
+                if (Deslocamento < 0) Deslocamento = 0;
+                if (RegistroRetornado <= 0) RegistroRetornado = 50;
+
                 return await _context
                     .Jogo
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
                     .Where(x => x.Plataforma == plataforma)
+                    .OrderBy(x => x.Id)
+                    .Skip(Deslocamento)
+                    .Take(RegistroRetornado)
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -157,15 +169,21 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterPorDesenvolvedoraAsync(int idDesenvolvedora)
+        public async Task<IEnumerable<JogoEntity>> ObterPorDesenvolvedoraAsync(int idDesenvolvedora, int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
+                if (Deslocamento < 0) Deslocamento = 0;
+                if (RegistroRetornado <= 0) RegistroRetornado = 50;
+
                 return await _context
                     .Jogo
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
                     .Where(x => x.DesenvolvedoraId == idDesenvolvedora)
+                    .OrderBy(x => x.Id)
+                    .Skip(Deslocamento)
+                    .Take(RegistroRetornado)
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -174,15 +192,21 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterPorCategoriaAsync(int idCategoria)
+        public async Task<IEnumerable<JogoEntity>> ObterPorCategoriaAsync(int idCategoria, int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
+                if (Deslocamento < 0) Deslocamento = 0;
+                if (RegistroRetornado <= 0) RegistroRetornado = 50;
+
                 return await _context
                     .Jogo
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
                     .Where(x => x.Categorias!.Any(c => c.Id == idCategoria))
+                    .OrderBy(x => x.Id)
+                    .Skip(Deslocamento)
+                    .Take(RegistroRetornado)
                     .ToListAsync();
             }
             catch (Exception ex)

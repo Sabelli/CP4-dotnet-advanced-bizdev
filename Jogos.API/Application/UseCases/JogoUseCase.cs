@@ -41,24 +41,24 @@ namespace Jogos.API.Application.UseCases
             return await _jogoRepository.ObterUmAsync(Id);
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterJogosPorNomeAsync(string nome)
+        public async Task<IEnumerable<JogoEntity>> ObterJogosPorNomeAsync(string nome, int Deslocamento, int RegistroRetornado)
         {
-            return await _jogoRepository.ObterPorNomeAsync(nome);
+            return await _jogoRepository.ObterPorNomeAsync(nome, Deslocamento, RegistroRetornado);
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterJogosPorPlataformaAsync(string plataforma)
+        public async Task<IEnumerable<JogoEntity>> ObterJogosPorPlataformaAsync(string plataforma, int Deslocamento, int RegistroRetornado)
         {
-            return await _jogoRepository.ObterPorPlataformaAsync(plataforma);
+            return await _jogoRepository.ObterPorPlataformaAsync(plataforma, Deslocamento, RegistroRetornado);
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterJogosPorDesenvolvedoraAsync(int idDesenvolvedora)
+        public async Task<IEnumerable<JogoEntity>> ObterJogosPorDesenvolvedoraAsync(int idDesenvolvedora, int Deslocamento, int RegistroRetornado)
         {
-            return await _jogoRepository.ObterPorDesenvolvedoraAsync(idDesenvolvedora);
+            return await _jogoRepository.ObterPorDesenvolvedoraAsync(idDesenvolvedora, Deslocamento, RegistroRetornado);
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterJogosPorCategoriaAsync(int idCategoria)
+        public async Task<IEnumerable<JogoEntity>> ObterJogosPorCategoriaAsync(int idCategoria, int Deslocamento, int RegistroRetornado)
         {
-            return await _jogoRepository.ObterPorCategoriaAsync(idCategoria);
+            return await _jogoRepository.ObterPorCategoriaAsync(idCategoria, Deslocamento, RegistroRetornado);
         }
 
         public async Task<JogoEntity?> VincularCategoriaAsync(int idJogo, int idCategoria)

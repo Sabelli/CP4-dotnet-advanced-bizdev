@@ -71,12 +71,12 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<PageResultModel<IEnumerable<DesenvolvedoraEntity>>> ObterTodosAsync(int Deslocamento = 0, int RegistroRetornado = 30)
+        public async Task<PageResultModel<IEnumerable<DesenvolvedoraEntity>>> ObterTodosAsync(int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
                 if (Deslocamento < 0) Deslocamento = 0;
-                if (RegistroRetornado <= 0) RegistroRetornado = 30;
+                if (RegistroRetornado <= 0) RegistroRetornado = 50;
 
                 var totalRegistros = await _context.Desenvolvedora.CountAsync();
 
