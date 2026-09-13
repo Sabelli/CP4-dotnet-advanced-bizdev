@@ -1,8 +1,11 @@
 using Jogos.API.Application.Dtos;
 using Jogos.API.Application.Interfaces;
+using Jogos.API.Doc.Samples;
+using Jogos.API.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Jogos.API.Presentation.Controllers
 {
@@ -32,9 +35,10 @@ namespace Jogos.API.Presentation.Controllers
             * Os dados incluem os **Jogos** relacionados a cada categoria.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Listagem retornada com sucesso")]
-        [SwaggerResponse(statusCode: 204, description: "Não há categorias cadastradas")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
+        [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<CategoriaEntity>))]
+        [SwaggerResponse(statusCode: 204, description: "Nenhuma categoria encontrada")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(CategoriaResponseListSample))]
         [EnableRateLimiting("politica_5_tentativas")]
         public async Task<IActionResult> Get(int Deslocamento = 0, int RegistroRetornado = 50)
         {
@@ -69,9 +73,10 @@ namespace Jogos.API.Presentation.Controllers
             * Os dados incluem os **Jogos** relacionados a essa categoria.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Categoria retornada com sucesso")]
+        [SwaggerResponse(statusCode: 200, description: "Categoria retornada com sucesso", type: typeof(CategoriaEntity))]
         [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(CategoriaResponseSample))]
         public async Task<IActionResult> Get(int id)
         {
             _logger.LogInformation("Obtendo categoria {CategoriaId}", id);
@@ -104,8 +109,10 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha ao criar a categoria (ex: dados inválidos).
             """
         )]
-        [SwaggerResponse(statusCode: 201, description: "Categoria criada com sucesso")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar a categoria")]
+        [SwaggerRequestExample(typeof(CategoriaRequestDto), typeof(CategoriaRequestSample))]
+        [SwaggerResponse(statusCode: 201, description: "Categoria criada com sucesso", type: typeof(CategoriaEntity))]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar a categoria", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 201, typeof(CategoriaResponseSample))]
         public async Task<IActionResult> Post(CategoriaRequestDto model)
         {
             _logger.LogInformation("Criando categoria {Nome}", model.Nome);
@@ -133,9 +140,11 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha ao editar a categoria.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Categoria editada com sucesso")]
+        [SwaggerRequestExample(typeof(CategoriaRequestDto), typeof(CategoriaRequestSample))]
+        [SwaggerResponse(statusCode: 200, description: "Categoria editada com sucesso", type: typeof(CategoriaEntity))]
         [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar a categoria")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar a categoria", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(CategoriaResponseSample))]
         public async Task<IActionResult> Put(int id, CategoriaRequestDto model)
         {
             _logger.LogInformation("Editando categoria {CategoriaId}", id);
@@ -169,9 +178,10 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha ao deletar a categoria.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Categoria deletada com sucesso")]
+        [SwaggerResponse(statusCode: 200, description: "Categoria deletada com sucesso", type: typeof(CategoriaEntity))]
         [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar a categoria")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar a categoria", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(CategoriaResponseSample))]
         public async Task<IActionResult> Delete(int id)
         {
             _logger.LogInformation("Deletando categoria {CategoriaId}", id);

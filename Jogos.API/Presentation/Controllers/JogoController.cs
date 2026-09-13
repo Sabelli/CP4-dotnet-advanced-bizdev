@@ -1,8 +1,11 @@
 using Jogos.API.Application.Dtos;
 using Jogos.API.Application.Interfaces;
+using Jogos.API.Doc.Samples;
+using Jogos.API.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Jogos.API.Presentation.Controllers
 {
@@ -32,9 +35,10 @@ namespace Jogos.API.Presentation.Controllers
             * Os dados incluem as entidades relacionadas (**Desenvolvedora** e **Categorias**).
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Listagem retornada com sucesso")]
-        [SwaggerResponse(statusCode: 204, description: "Não há jogos cadastrados")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
+        [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<JogoEntity>))]
+        [SwaggerResponse(statusCode: 204, description: "Nenhum jogo encontrado")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseListSample))]
         [EnableRateLimiting("politica_5_tentativas")]
         public async Task<IActionResult> Get(int Deslocamento = 0, int RegistroRetornado = 50)
         {
@@ -69,9 +73,10 @@ namespace Jogos.API.Presentation.Controllers
             * Os dados incluem as entidades relacionadas (**Desenvolvedora** e **Categorias**).
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Jogo retornado com sucesso")]
+        [SwaggerResponse(statusCode: 200, description: "Jogo retornado com sucesso", type: typeof(JogoEntity))]
         [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseSample))]
         public async Task<IActionResult> Get(int id)
         {
             _logger.LogInformation("Obtendo jogo {JogoId}", id);
@@ -108,9 +113,10 @@ namespace Jogos.API.Presentation.Controllers
             * Os dados incluem as entidades relacionadas (**Desenvolvedora** e **Categorias**).
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Jogos retornados com sucesso")]
+        [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<JogoEntity>))]
         [SwaggerResponse(statusCode: 204, description: "Nenhum jogo encontrado com esse nome")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseListSample))]
         [EnableRateLimiting("politica_5_tentativas")]
         public async Task<IActionResult> GetAllJogosByNome(string nome, int Deslocamento = 0, int RegistroRetornado = 50)
         {
@@ -145,9 +151,10 @@ namespace Jogos.API.Presentation.Controllers
             * Os dados incluem as entidades relacionadas (**Desenvolvedora** e **Categorias**).
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Jogos retornados com sucesso")]
+        [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<JogoEntity>))]
         [SwaggerResponse(statusCode: 204, description: "Nenhum jogo encontrado nessa plataforma")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseListSample))]
         [EnableRateLimiting("politica_5_tentativas")]
         public async Task<IActionResult> GetAllJogosByPlataforma(string plataforma, int Deslocamento = 0, int RegistroRetornado = 50)
         {
@@ -182,9 +189,10 @@ namespace Jogos.API.Presentation.Controllers
             * Os dados incluem as entidades relacionadas (**Desenvolvedora** e **Categorias**).
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Jogos retornados com sucesso")]
+        [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<JogoEntity>))]
         [SwaggerResponse(statusCode: 204, description: "Nenhum jogo encontrado para essa desenvolvedora")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseListSample))]
         [EnableRateLimiting("politica_5_tentativas")]
         public async Task<IActionResult> GetAllJogosByDesenvolvedora(int idDesenvolvedora, int Deslocamento = 0, int RegistroRetornado = 50)
         {
@@ -219,9 +227,10 @@ namespace Jogos.API.Presentation.Controllers
             * Os dados incluem as entidades relacionadas (**Desenvolvedora** e **Categorias**).
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Jogos retornados com sucesso")]
+        [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<JogoEntity>))]
         [SwaggerResponse(statusCode: 204, description: "Nenhum jogo encontrado para essa categoria")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseListSample))]
         [EnableRateLimiting("politica_5_tentativas")]
         public async Task<IActionResult> GetAllJogosByCategoria(int idCategoria, int Deslocamento = 0, int RegistroRetornado = 50)
         {
@@ -255,8 +264,10 @@ namespace Jogos.API.Presentation.Controllers
             * A vinculação com **Categorias** é feita separadamente pelo endpoint `POST /api/jogo/categoria/{idJogo}/{idCategoria}`.
             """
         )]
-        [SwaggerResponse(statusCode: 201, description: "Jogo criado com sucesso")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar o jogo")]
+        [SwaggerRequestExample(typeof(JogoRequestDto), typeof(JogoRequestSample))]
+        [SwaggerResponse(statusCode: 201, description: "Jogo criado com sucesso", type: typeof(JogoEntity))]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar o jogo", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 201, typeof(JogoResponseSample))]
         public async Task<IActionResult> Post(JogoRequestDto model)
         {
             _logger.LogInformation("Criando jogo {Nome}", model.Nome);
@@ -284,9 +295,11 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha ao editar o jogo.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Jogo editado com sucesso")]
+        [SwaggerRequestExample(typeof(JogoRequestDto), typeof(JogoRequestSample))]
+        [SwaggerResponse(statusCode: 200, description: "Jogo editado com sucesso", type: typeof(JogoEntity))]
         [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar o jogo")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar o jogo", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseSample))]
         public async Task<IActionResult> Put(int id, JogoRequestDto model)
         {
             _logger.LogInformation("Editando jogo {JogoId}", id);
@@ -320,9 +333,10 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha ao deletar o jogo.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Jogo deletado com sucesso")]
+        [SwaggerResponse(statusCode: 200, description: "Jogo deletado com sucesso", type: typeof(JogoEntity))]
         [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar o jogo")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar o jogo", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseSample))]
         public async Task<IActionResult> Delete(int id)
         {
             _logger.LogInformation("Deletando jogo {JogoId}", id);
@@ -359,9 +373,10 @@ namespace Jogos.API.Presentation.Controllers
             * Relação **N:N** entre Jogo e Categoria. Se a categoria já estiver vinculada, nada é alterado.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Categoria vinculada com sucesso")]
+        [SwaggerResponse(statusCode: 200, description: "Categoria vinculada com sucesso", type: typeof(JogoEntity))]
         [SwaggerResponse(statusCode: 404, description: "Jogo ou categoria não encontrados")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao vincular a categoria")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao vincular a categoria", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseSample))]
         public async Task<IActionResult> PostCategoriaJogo(int idJogo, int idCategoria)
         {
             _logger.LogInformation("Vinculando categoria {CategoriaId} ao jogo {JogoId}", idCategoria, idJogo);

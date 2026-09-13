@@ -1,8 +1,11 @@
 using Jogos.API.Application.Dtos;
 using Jogos.API.Application.Interfaces;
+using Jogos.API.Doc.Samples;
+using Jogos.API.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Jogos.API.Presentation.Controllers
 {
@@ -32,9 +35,10 @@ namespace Jogos.API.Presentation.Controllers
             * Os dados incluem os **Jogos** relacionados a cada desenvolvedora.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Listagem retornada com sucesso")]
-        [SwaggerResponse(statusCode: 204, description: "Não há desenvolvedoras cadastradas")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
+        [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<DesenvolvedoraEntity>))]
+        [SwaggerResponse(statusCode: 204, description: "Nenhuma desenvolvedora encontrada")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(DesenvolvedoraResponseListSample))]
         [EnableRateLimiting("politica_5_tentativas")]
         public async Task<IActionResult> Get(int Deslocamento = 0, int RegistroRetornado = 50)
         {
@@ -69,9 +73,10 @@ namespace Jogos.API.Presentation.Controllers
             * Os dados incluem os **Jogos** relacionados a essa desenvolvedora.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Desenvolvedora retornada com sucesso")]
+        [SwaggerResponse(statusCode: 200, description: "Desenvolvedora retornada com sucesso", type: typeof(DesenvolvedoraEntity))]
         [SwaggerResponse(statusCode: 404, description: "Desenvolvedora não encontrada")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(DesenvolvedoraResponseSample))]
         public async Task<IActionResult> Get(int id)
         {
             _logger.LogInformation("Obtendo desenvolvedora {DesenvolvedoraId}", id);
@@ -104,8 +109,10 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha ao criar a desenvolvedora (ex: dados inválidos).
             """
         )]
-        [SwaggerResponse(statusCode: 201, description: "Desenvolvedora criada com sucesso")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar a desenvolvedora")]
+        [SwaggerRequestExample(typeof(DesenvolvedoraRequestDto), typeof(DesenvolvedoraRequestSample))]
+        [SwaggerResponse(statusCode: 201, description: "Desenvolvedora criada com sucesso", type: typeof(DesenvolvedoraEntity))]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar a desenvolvedora", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 201, typeof(DesenvolvedoraResponseSample))]
         public async Task<IActionResult> Post(DesenvolvedoraRequestDto model)
         {
             _logger.LogInformation("Criando desenvolvedora {Nome}", model.Nome);
@@ -133,9 +140,11 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha ao editar a desenvolvedora.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Desenvolvedora editada com sucesso")]
+        [SwaggerRequestExample(typeof(DesenvolvedoraRequestDto), typeof(DesenvolvedoraRequestSample))]
+        [SwaggerResponse(statusCode: 200, description: "Desenvolvedora editada com sucesso", type: typeof(DesenvolvedoraEntity))]
         [SwaggerResponse(statusCode: 404, description: "Desenvolvedora não encontrada")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar a desenvolvedora")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar a desenvolvedora", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(DesenvolvedoraResponseSample))]
         public async Task<IActionResult> Put(int id, DesenvolvedoraRequestDto model)
         {
             _logger.LogInformation("Editando desenvolvedora {DesenvolvedoraId}", id);
@@ -169,9 +178,10 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha ao deletar a desenvolvedora.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Desenvolvedora deletada com sucesso")]
+        [SwaggerResponse(statusCode: 200, description: "Desenvolvedora deletada com sucesso", type: typeof(DesenvolvedoraEntity))]
         [SwaggerResponse(statusCode: 404, description: "Desenvolvedora não encontrada")]
-        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar a desenvolvedora")]
+        [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar a desenvolvedora", type: typeof(string))]
+        [SwaggerResponseExample(statusCode: 200, typeof(DesenvolvedoraResponseSample))]
         public async Task<IActionResult> Delete(int id)
         {
             _logger.LogInformation("Deletando desenvolvedora {DesenvolvedoraId}", id);

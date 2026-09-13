@@ -11,6 +11,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
+using Swashbuckle.AspNetCore.Filters;
 using System.Threading.RateLimiting;
 
 Log.Logger = new LoggerConfiguration()
@@ -47,7 +48,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => {
     c.EnableAnnotations();
+    c.ExampleFilters();
 });
+
+builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 
 // Adicionando Compactação
 builder.Services.AddResponseCompression(options => {
