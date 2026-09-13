@@ -18,6 +18,11 @@ namespace Jogos.API.Infrastructure.Data.Repositories
         {
             try
             {
+                var existe = await _context.Desenvolvedora.CountAsync(x => x.Nome == entity.Nome) > 0;
+
+                if (existe)
+                    return null;
+
                 _context.Desenvolvedora.Add(entity);
                 await _context.SaveChangesAsync();
 

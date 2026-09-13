@@ -106,11 +106,13 @@ namespace Jogos.API.Presentation.Controllers
             Description = """
             ## Informações do Retorno:
             * **Status 201 (Created):** Categoria criada com sucesso.
+            * **Status 409 (Conflict):** Já existe uma categoria com esse nome.
             * **Status 400 (Bad Request):** Ocorreu uma falha ao criar a categoria (ex: dados inválidos).
             """
         )]
         [SwaggerRequestExample(typeof(CategoriaRequestDto), typeof(CategoriaRequestSample))]
         [SwaggerResponse(statusCode: 201, description: "Categoria criada com sucesso", type: typeof(CategoriaEntity))]
+        [SwaggerResponse(statusCode: 409, description: "Já existe uma categoria com esse nome", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar a categoria", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 201, typeof(CategoriaCreatedSample))]
         public async Task<IActionResult> Post(CategoriaRequestDto model)
@@ -121,7 +123,13 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var categoria = await _categoriaUseCase.AdicionarCategoriaAsync(model);
 
-                return CreatedAtAction(nameof(Get), new { id = categoria?.Id ?? 0 }, categoria);
+                if (categoria is null)
+                {
+                    _logger.LogWarning("Categoria {Nome} já existe", model.Nome);
+                    return Conflict($"Já existe uma categoria com o nome '{model.Nome}'.");
+                }
+
+                return CreatedAtAction(nameof(Get), new { id = categoria.Id }, categoria);
             }
             catch (Exception ex)
             {

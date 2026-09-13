@@ -106,11 +106,13 @@ namespace Jogos.API.Presentation.Controllers
             Description = """
             ## Informações do Retorno:
             * **Status 201 (Created):** Desenvolvedora criada com sucesso.
+            * **Status 409 (Conflict):** Já existe uma desenvolvedora com esse nome.
             * **Status 400 (Bad Request):** Ocorreu uma falha ao criar a desenvolvedora (ex: dados inválidos).
             """
         )]
         [SwaggerRequestExample(typeof(DesenvolvedoraRequestDto), typeof(DesenvolvedoraRequestSample))]
         [SwaggerResponse(statusCode: 201, description: "Desenvolvedora criada com sucesso", type: typeof(DesenvolvedoraEntity))]
+        [SwaggerResponse(statusCode: 409, description: "Já existe uma desenvolvedora com esse nome", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar a desenvolvedora", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 201, typeof(DesenvolvedoraCreatedSample))]
         public async Task<IActionResult> Post(DesenvolvedoraRequestDto model)
@@ -121,7 +123,13 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var desenvolvedora = await _desenvolvedoraUseCase.AdicionarDesenvolvedoraAsync(model);
 
-                return CreatedAtAction(nameof(Get), new { id = desenvolvedora?.Id ?? 0 }, desenvolvedora);
+                if (desenvolvedora is null)
+                {
+                    _logger.LogWarning("Desenvolvedora {Nome} já existe", model.Nome);
+                    return Conflict($"Já existe uma desenvolvedora com o nome '{model.Nome}'.");
+                }
+
+                return CreatedAtAction(nameof(Get), new { id = desenvolvedora.Id }, desenvolvedora);
             }
             catch (Exception ex)
             {

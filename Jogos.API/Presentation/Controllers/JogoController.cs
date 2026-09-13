@@ -266,6 +266,7 @@ namespace Jogos.API.Presentation.Controllers
         )]
         [SwaggerRequestExample(typeof(JogoRequestDto), typeof(JogoRequestSample))]
         [SwaggerResponse(statusCode: 201, description: "Jogo criado com sucesso", type: typeof(JogoEntity))]
+        [SwaggerResponse(statusCode: 409, description: "Já existe um jogo com esse nome nessa plataforma", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar o jogo", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 201, typeof(JogoCreatedSample))]
         public async Task<IActionResult> Post(JogoRequestDto model)
@@ -276,7 +277,13 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var jogo = await _jogoUseCase.AdicionarJogoAsync(model);
 
-                return CreatedAtAction(nameof(Get), new { id = jogo?.Id ?? 0 }, jogo);
+                if (jogo is null)
+                {
+                    _logger.LogWarning("Jogo {Nome} já existe na plataforma {Plataforma}", model.Nome, model.Plataforma);
+                    return Conflict($"Já existe um jogo com o nome '{model.Nome}' na plataforma '{model.Plataforma}'.");
+                }
+
+                return CreatedAtAction(nameof(Get), new { id = jogo.Id }, jogo);
             }
             catch (Exception ex)
             {
