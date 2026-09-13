@@ -18,7 +18,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
         {
             try
             {
-                var existe = await _context.Jogo.CountAsync(x => x.Nome == entity.Nome && x.Plataforma == entity.Plataforma) > 0;
+                var existe = await _context.Jogo.CountAsync(x => x.Nome.ToUpper() == entity.Nome.ToUpper() && x.Plataforma.ToUpper() == entity.Plataforma.ToUpper()) > 0;
 
                 if (existe)
                     return null;
