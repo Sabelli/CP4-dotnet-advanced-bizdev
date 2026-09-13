@@ -267,7 +267,7 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerRequestExample(typeof(JogoRequestDto), typeof(JogoRequestSample))]
         [SwaggerResponse(statusCode: 201, description: "Jogo criado com sucesso", type: typeof(JogoEntity))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar o jogo", type: typeof(string))]
-        [SwaggerResponseExample(statusCode: 201, typeof(JogoResponseSample))]
+        [SwaggerResponseExample(statusCode: 201, typeof(JogoCreatedSample))]
         public async Task<IActionResult> Post(JogoRequestDto model)
         {
             _logger.LogInformation("Criando jogo {Nome}", model.Nome);
@@ -276,7 +276,7 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var jogo = await _jogoUseCase.AdicionarJogoAsync(model);
 
-                return CreatedAtAction(nameof(Get), new { id = jogo?.Id ?? 0 }, model);
+                return CreatedAtAction(nameof(Get), new { id = jogo?.Id ?? 0 }, jogo);
             }
             catch (Exception ex)
             {

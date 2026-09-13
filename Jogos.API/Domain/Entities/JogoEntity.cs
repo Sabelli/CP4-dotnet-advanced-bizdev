@@ -31,6 +31,6 @@ namespace Jogos.API.Domain.Entities
 
         public DesenvolvedoraEntity? Desenvolvedora { get; set; }
 
-        public ICollection<CategoriaEntity>? Categorias { get; set; } = [];
+        public ICollection<CategoriaEntity>? Categorias { get; set; }
     }
 }

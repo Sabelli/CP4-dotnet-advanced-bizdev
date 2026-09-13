@@ -11,11 +11,11 @@ namespace Jogos.API.Domain.Entities
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "O nome da categoria é obrigatório")]
+        [Required(ErrorMessage = "O nome da categoria ï¿½ obrigatï¿½rio")]
         [StringLength(100, MinimumLength = 3, ErrorMessage = "O nome da categoria deve ter entre 3 e 100 caracteres")]
         [Column("c_nome")]
         public string Nome { get; set; }
 
-        public ICollection<JogoEntity>? Jogos { get; set; } = [];
+        public ICollection<JogoEntity>? Jogos { get; set; }
     }
 }

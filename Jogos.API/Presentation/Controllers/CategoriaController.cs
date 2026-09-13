@@ -112,7 +112,7 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerRequestExample(typeof(CategoriaRequestDto), typeof(CategoriaRequestSample))]
         [SwaggerResponse(statusCode: 201, description: "Categoria criada com sucesso", type: typeof(CategoriaEntity))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar a categoria", type: typeof(string))]
-        [SwaggerResponseExample(statusCode: 201, typeof(CategoriaResponseSample))]
+        [SwaggerResponseExample(statusCode: 201, typeof(CategoriaCreatedSample))]
         public async Task<IActionResult> Post(CategoriaRequestDto model)
         {
             _logger.LogInformation("Criando categoria {Nome}", model.Nome);
@@ -121,7 +121,7 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var categoria = await _categoriaUseCase.AdicionarCategoriaAsync(model);
 
-                return CreatedAtAction(nameof(Get), new { id = categoria?.Id ?? 0 }, model);
+                return CreatedAtAction(nameof(Get), new { id = categoria?.Id ?? 0 }, categoria);
             }
             catch (Exception ex)
             {

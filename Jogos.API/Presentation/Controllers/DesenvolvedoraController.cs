@@ -112,7 +112,7 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerRequestExample(typeof(DesenvolvedoraRequestDto), typeof(DesenvolvedoraRequestSample))]
         [SwaggerResponse(statusCode: 201, description: "Desenvolvedora criada com sucesso", type: typeof(DesenvolvedoraEntity))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar a desenvolvedora", type: typeof(string))]
-        [SwaggerResponseExample(statusCode: 201, typeof(DesenvolvedoraResponseSample))]
+        [SwaggerResponseExample(statusCode: 201, typeof(DesenvolvedoraCreatedSample))]
         public async Task<IActionResult> Post(DesenvolvedoraRequestDto model)
         {
             _logger.LogInformation("Criando desenvolvedora {Nome}", model.Nome);
@@ -121,7 +121,7 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var desenvolvedora = await _desenvolvedoraUseCase.AdicionarDesenvolvedoraAsync(model);
 
-                return CreatedAtAction(nameof(Get), new { id = desenvolvedora?.Id ?? 0 }, model);
+                return CreatedAtAction(nameof(Get), new { id = desenvolvedora?.Id ?? 0 }, desenvolvedora);
             }
             catch (Exception ex)
             {
