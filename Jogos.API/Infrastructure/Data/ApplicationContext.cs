@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Jogos.API.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Jogos.API.Infrastructure.Data
 {
@@ -8,5 +9,9 @@ namespace Jogos.API.Infrastructure.Data
         {
 
         }
+
+        public DbSet<CategoriaEntity> Cliente { get; set; }
+        public DbSet<DesenvolvedoraEntity> Produto { get; set; }
+        public DbSet<JogoEntity> Curso { get; set; }
     }
 }
