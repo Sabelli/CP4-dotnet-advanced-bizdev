@@ -11,10 +11,12 @@ namespace Jogos.API.Presentation.Controllers
     public class JogoController : ControllerBase
     {
         private readonly IJogoUseCase _jogoUseCase;
+        private readonly ILogger<JogoController> _logger;
 
-        public JogoController(IJogoUseCase jogoUseCase)
+        public JogoController(IJogoUseCase jogoUseCase, ILogger<JogoController> logger)
         {
             _jogoUseCase = jogoUseCase;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -36,6 +38,8 @@ namespace Jogos.API.Presentation.Controllers
         [EnableRateLimiting("politica_5_tentativas")]
         public async Task<IActionResult> Get(int Deslocamento = 0, int RegistroRetornado = 50)
         {
+            _logger.LogInformation("Listando jogos, Deslocamento={Deslocamento}, RegistroRetornado={RegistroRetornado}", Deslocamento, RegistroRetornado);
+
             try
             {
                 var resultado = await _jogoUseCase.ObterTodosJogosAsync(Deslocamento, RegistroRetornado);
@@ -47,6 +51,7 @@ namespace Jogos.API.Presentation.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao listar jogos");
                 return BadRequest(ex.Message);
             }
         }
@@ -69,17 +74,23 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
         public async Task<IActionResult> Get(int id)
         {
+            _logger.LogInformation("Obtendo jogo {JogoId}", id);
+
             try
             {
                 var jogo = await _jogoUseCase.ObterUmJogoAsync(id);
 
                 if (jogo is null)
+                {
+                    _logger.LogWarning("Jogo {JogoId} não encontrado", id);
                     return NotFound();
+                }
 
                 return Ok(jogo);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao obter jogo {JogoId}", id);
                 return BadRequest(ex.Message);
             }
         }
@@ -103,6 +114,8 @@ namespace Jogos.API.Presentation.Controllers
         [EnableRateLimiting("politica_5_tentativas")]
         public async Task<IActionResult> GetAllJogosByNome(string nome, int Deslocamento = 0, int RegistroRetornado = 50)
         {
+            _logger.LogInformation("Listando jogos pelo nome {Nome}", nome);
+
             try
             {
                 var resultado = await _jogoUseCase.ObterJogosPorNomeAsync(nome, Deslocamento, RegistroRetornado);
@@ -114,6 +127,7 @@ namespace Jogos.API.Presentation.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao listar jogos pelo nome {Nome}", nome);
                 return BadRequest(ex.Message);
             }
         }
@@ -137,6 +151,8 @@ namespace Jogos.API.Presentation.Controllers
         [EnableRateLimiting("politica_5_tentativas")]
         public async Task<IActionResult> GetAllJogosByPlataforma(string plataforma, int Deslocamento = 0, int RegistroRetornado = 50)
         {
+            _logger.LogInformation("Listando jogos pela plataforma {Plataforma}", plataforma);
+
             try
             {
                 var resultado = await _jogoUseCase.ObterJogosPorPlataformaAsync(plataforma, Deslocamento, RegistroRetornado);
@@ -148,6 +164,7 @@ namespace Jogos.API.Presentation.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao listar jogos pela plataforma {Plataforma}", plataforma);
                 return BadRequest(ex.Message);
             }
         }
@@ -171,6 +188,8 @@ namespace Jogos.API.Presentation.Controllers
         [EnableRateLimiting("politica_5_tentativas")]
         public async Task<IActionResult> GetAllJogosByDesenvolvedora(int idDesenvolvedora, int Deslocamento = 0, int RegistroRetornado = 50)
         {
+            _logger.LogInformation("Listando jogos pela desenvolvedora {DesenvolvedoraId}", idDesenvolvedora);
+
             try
             {
                 var resultado = await _jogoUseCase.ObterJogosPorDesenvolvedoraAsync(idDesenvolvedora, Deslocamento, RegistroRetornado);
@@ -182,6 +201,7 @@ namespace Jogos.API.Presentation.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao listar jogos pela desenvolvedora {DesenvolvedoraId}", idDesenvolvedora);
                 return BadRequest(ex.Message);
             }
         }
@@ -205,6 +225,8 @@ namespace Jogos.API.Presentation.Controllers
         [EnableRateLimiting("politica_5_tentativas")]
         public async Task<IActionResult> GetAllJogosByCategoria(int idCategoria, int Deslocamento = 0, int RegistroRetornado = 50)
         {
+            _logger.LogInformation("Listando jogos pela categoria {CategoriaId}", idCategoria);
+
             try
             {
                 var resultado = await _jogoUseCase.ObterJogosPorCategoriaAsync(idCategoria, Deslocamento, RegistroRetornado);
@@ -216,6 +238,7 @@ namespace Jogos.API.Presentation.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao listar jogos pela categoria {CategoriaId}", idCategoria);
                 return BadRequest(ex.Message);
             }
         }
@@ -236,6 +259,8 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar o jogo")]
         public async Task<IActionResult> Post(JogoRequestDto model)
         {
+            _logger.LogInformation("Criando jogo {Nome}", model.Nome);
+
             try
             {
                 var jogo = await _jogoUseCase.AdicionarJogoAsync(model);
@@ -244,6 +269,7 @@ namespace Jogos.API.Presentation.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao criar jogo {Nome}", model.Nome);
                 return BadRequest(ex.Message);
             }
         }
@@ -263,17 +289,23 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar o jogo")]
         public async Task<IActionResult> Put(int id, JogoRequestDto model)
         {
+            _logger.LogInformation("Editando jogo {JogoId}", id);
+
             try
             {
                 var jogo = await _jogoUseCase.EditarJogoAsync(id, model);
 
                 if (jogo is null)
+                {
+                    _logger.LogWarning("Jogo {JogoId} não encontrado para edição", id);
                     return NotFound();
+                }
 
                 return Ok(jogo);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao editar jogo {JogoId}", id);
                 return BadRequest(ex.Message);
             }
         }
@@ -293,17 +325,23 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar o jogo")]
         public async Task<IActionResult> Delete(int id)
         {
+            _logger.LogInformation("Deletando jogo {JogoId}", id);
+
             try
             {
                 var jogo = await _jogoUseCase.DeletarJogoAsync(id);
 
                 if (jogo is null)
+                {
+                    _logger.LogWarning("Jogo {JogoId} não encontrado para deleção", id);
                     return NotFound();
+                }
 
                 return Ok(jogo);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao deletar jogo {JogoId}", id);
                 return BadRequest(ex.Message);
             }
         }
@@ -326,17 +364,23 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao vincular a categoria")]
         public async Task<IActionResult> PostCategoriaJogo(int idJogo, int idCategoria)
         {
+            _logger.LogInformation("Vinculando categoria {CategoriaId} ao jogo {JogoId}", idCategoria, idJogo);
+
             try
             {
                 var jogo = await _jogoUseCase.VincularCategoriaAsync(idJogo, idCategoria);
 
                 if (jogo is null)
+                {
+                    _logger.LogWarning("Jogo {JogoId} ou categoria {CategoriaId} não encontrados para vínculo", idJogo, idCategoria);
                     return NotFound();
+                }
 
                 return Ok(jogo);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao vincular categoria {CategoriaId} ao jogo {JogoId}", idCategoria, idJogo);
                 return BadRequest(ex.Message);
             }
         }

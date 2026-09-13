@@ -11,10 +11,12 @@ namespace Jogos.API.Presentation.Controllers
     public class DesenvolvedoraController : ControllerBase
     {
         private readonly IDesenvolvedoraUseCase _desenvolvedoraUseCase;
+        private readonly ILogger<DesenvolvedoraController> _logger;
 
-        public DesenvolvedoraController(IDesenvolvedoraUseCase desenvolvedoraUseCase)
+        public DesenvolvedoraController(IDesenvolvedoraUseCase desenvolvedoraUseCase, ILogger<DesenvolvedoraController> logger)
         {
             _desenvolvedoraUseCase = desenvolvedoraUseCase;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -36,6 +38,8 @@ namespace Jogos.API.Presentation.Controllers
         [EnableRateLimiting("politica_5_tentativas")]
         public async Task<IActionResult> Get(int Deslocamento = 0, int RegistroRetornado = 50)
         {
+            _logger.LogInformation("Listando desenvolvedoras, Deslocamento={Deslocamento}, RegistroRetornado={RegistroRetornado}", Deslocamento, RegistroRetornado);
+
             try
             {
                 var resultado = await _desenvolvedoraUseCase.ObterTodosDesenvolvedorasAsync(Deslocamento, RegistroRetornado);
@@ -47,6 +51,7 @@ namespace Jogos.API.Presentation.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao listar desenvolvedoras");
                 return BadRequest(ex.Message);
             }
         }
@@ -69,17 +74,23 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
         public async Task<IActionResult> Get(int id)
         {
+            _logger.LogInformation("Obtendo desenvolvedora {DesenvolvedoraId}", id);
+
             try
             {
                 var desenvolvedora = await _desenvolvedoraUseCase.ObterUmaDesenvolvedoraAsync(id);
 
                 if (desenvolvedora is null)
+                {
+                    _logger.LogWarning("Desenvolvedora {DesenvolvedoraId} não encontrada", id);
                     return NotFound();
+                }
 
                 return Ok(desenvolvedora);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao obter desenvolvedora {DesenvolvedoraId}", id);
                 return BadRequest(ex.Message);
             }
         }
@@ -97,6 +108,8 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar a desenvolvedora")]
         public async Task<IActionResult> Post(DesenvolvedoraRequestDto model)
         {
+            _logger.LogInformation("Criando desenvolvedora {Nome}", model.Nome);
+
             try
             {
                 var desenvolvedora = await _desenvolvedoraUseCase.AdicionarDesenvolvedoraAsync(model);
@@ -105,6 +118,7 @@ namespace Jogos.API.Presentation.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao criar desenvolvedora {Nome}", model.Nome);
                 return BadRequest(ex.Message);
             }
         }
@@ -124,17 +138,23 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar a desenvolvedora")]
         public async Task<IActionResult> Put(int id, DesenvolvedoraRequestDto model)
         {
+            _logger.LogInformation("Editando desenvolvedora {DesenvolvedoraId}", id);
+
             try
             {
                 var desenvolvedora = await _desenvolvedoraUseCase.EditarDesenvolvedoraAsync(id, model);
 
                 if (desenvolvedora is null)
+                {
+                    _logger.LogWarning("Desenvolvedora {DesenvolvedoraId} não encontrada para edição", id);
                     return NotFound();
+                }
 
                 return Ok(desenvolvedora);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao editar desenvolvedora {DesenvolvedoraId}", id);
                 return BadRequest(ex.Message);
             }
         }
@@ -154,17 +174,23 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar a desenvolvedora")]
         public async Task<IActionResult> Delete(int id)
         {
+            _logger.LogInformation("Deletando desenvolvedora {DesenvolvedoraId}", id);
+
             try
             {
                 var desenvolvedora = await _desenvolvedoraUseCase.DeletarDesenvolvedoraAsync(id);
 
                 if (desenvolvedora is null)
+                {
+                    _logger.LogWarning("Desenvolvedora {DesenvolvedoraId} não encontrada para deleção", id);
                     return NotFound();
+                }
 
                 return Ok(desenvolvedora);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao deletar desenvolvedora {DesenvolvedoraId}", id);
                 return BadRequest(ex.Message);
             }
         }

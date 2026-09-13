@@ -1,10 +1,13 @@
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Jogos.API.Application.Interfaces;
 using Jogos.API.Application.UseCases;
 using Jogos.API.Domain.Interfaces;
 using Jogos.API.Infrastructure.Data;
 using Jogos.API.Infrastructure.Data.Repositories;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.RateLimiting;
 
@@ -57,6 +60,30 @@ builder.Services.AddRateLimiter(options => {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
+// Adicionando Health Checks
+builder.Services.AddHealthChecks()
+    // Liveness
+    .AddCheck(
+        "self",
+        () => HealthCheckResult.Healthy(),
+        tags: ["live"])
+    // Readiness
+    .AddOracle(
+        connectionString: builder.Configuration.GetConnectionString("Oracle") ?? "",
+        name: "oracle",
+        failureStatus: HealthStatus.Unhealthy,
+        tags: ["db"]);
+
+// Adicionando Application Insights (somente se a connection string estiver configurada)
+var appInsightsConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"];
+if (!string.IsNullOrWhiteSpace(appInsightsConnectionString))
+{
+    builder.Services.AddOpenTelemetry()
+        .UseAzureMonitor(options => {
+            options.ConnectionString = appInsightsConnectionString;
+        });
+}
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -74,5 +101,15 @@ app.UseRateLimiter();
 app.UseResponseCompression();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("live")
+});
+
+app.MapHealthChecks("/health/db", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("db")
+});
 
 app.Run();

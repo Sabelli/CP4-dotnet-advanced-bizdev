@@ -11,10 +11,12 @@ namespace Jogos.API.Presentation.Controllers
     public class CategoriaController : ControllerBase
     {
         private readonly ICategoriaUseCase _categoriaUseCase;
+        private readonly ILogger<CategoriaController> _logger;
 
-        public CategoriaController(ICategoriaUseCase categoriaUseCase)
+        public CategoriaController(ICategoriaUseCase categoriaUseCase, ILogger<CategoriaController> logger)
         {
             _categoriaUseCase = categoriaUseCase;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -36,6 +38,8 @@ namespace Jogos.API.Presentation.Controllers
         [EnableRateLimiting("politica_5_tentativas")]
         public async Task<IActionResult> Get(int Deslocamento = 0, int RegistroRetornado = 50)
         {
+            _logger.LogInformation("Listando categorias, Deslocamento={Deslocamento}, RegistroRetornado={RegistroRetornado}", Deslocamento, RegistroRetornado);
+
             try
             {
                 var resultado = await _categoriaUseCase.ObterTodosCategoriasAsync(Deslocamento, RegistroRetornado);
@@ -47,6 +51,7 @@ namespace Jogos.API.Presentation.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao listar categorias");
                 return BadRequest(ex.Message);
             }
         }
@@ -69,17 +74,23 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados")]
         public async Task<IActionResult> Get(int id)
         {
+            _logger.LogInformation("Obtendo categoria {CategoriaId}", id);
+
             try
             {
                 var categoria = await _categoriaUseCase.ObterUmaCategoriaAsync(id);
 
                 if (categoria is null)
+                {
+                    _logger.LogWarning("Categoria {CategoriaId} não encontrada", id);
                     return NotFound();
+                }
 
                 return Ok(categoria);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao obter categoria {CategoriaId}", id);
                 return BadRequest(ex.Message);
             }
         }
@@ -97,6 +108,8 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar a categoria")]
         public async Task<IActionResult> Post(CategoriaRequestDto model)
         {
+            _logger.LogInformation("Criando categoria {Nome}", model.Nome);
+
             try
             {
                 var categoria = await _categoriaUseCase.AdicionarCategoriaAsync(model);
@@ -105,6 +118,7 @@ namespace Jogos.API.Presentation.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao criar categoria {Nome}", model.Nome);
                 return BadRequest(ex.Message);
             }
         }
@@ -124,17 +138,23 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar a categoria")]
         public async Task<IActionResult> Put(int id, CategoriaRequestDto model)
         {
+            _logger.LogInformation("Editando categoria {CategoriaId}", id);
+
             try
             {
                 var categoria = await _categoriaUseCase.EditarCategoriaAsync(id, model);
 
                 if (categoria is null)
+                {
+                    _logger.LogWarning("Categoria {CategoriaId} não encontrada para edição", id);
                     return NotFound();
+                }
 
                 return Ok(categoria);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao editar categoria {CategoriaId}", id);
                 return BadRequest(ex.Message);
             }
         }
@@ -154,17 +174,23 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar a categoria")]
         public async Task<IActionResult> Delete(int id)
         {
+            _logger.LogInformation("Deletando categoria {CategoriaId}", id);
+
             try
             {
                 var categoria = await _categoriaUseCase.DeletarCategoriaAsync(id);
 
                 if (categoria is null)
+                {
+                    _logger.LogWarning("Categoria {CategoriaId} não encontrada para deleção", id);
                     return NotFound();
+                }
 
                 return Ok(categoria);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Erro ao deletar categoria {CategoriaId}", id);
                 return BadRequest(ex.Message);
             }
         }
