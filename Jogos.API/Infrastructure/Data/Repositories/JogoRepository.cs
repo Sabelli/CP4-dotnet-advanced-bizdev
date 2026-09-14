@@ -77,7 +77,11 @@ namespace Jogos.API.Infrastructure.Data.Repositories
         {
             try
             {
-                var jogo = await _context.Jogo.FirstOrDefaultAsync(x => x.Id == Id);
+                var jogo = await _context.Jogo
+                    .Include(x => x.Desenvolvedora)
+                    .Include(x => x.Categorias)
+                    .Include(x => x.Plataformas)
+                    .FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (jogo is null)
                     return null;
@@ -97,7 +101,11 @@ namespace Jogos.API.Infrastructure.Data.Repositories
         {
             try
             {
-                var jogo = await _context.Jogo.FirstOrDefaultAsync(x => x.Id == Id);
+                var jogo = await _context.Jogo
+                    .Include(x => x.Desenvolvedora)
+                    .Include(x => x.Categorias)
+                    .Include(x => x.Plataformas)
+                    .FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (jogo is null)
                     return null;
@@ -180,7 +188,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
                     .Include(x => x.Plataformas)
-                    .Where(x => x.Nome.Contains(nome))
+                    .Where(x => x.Nome.ToUpper().Contains(nome.ToUpper()))
                     .OrderBy(x => x.Id)
                     .Skip(Deslocamento)
                     .Take(RegistroRetornado)
