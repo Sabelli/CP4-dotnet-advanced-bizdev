@@ -137,3 +137,6 @@ app.MapHealthChecks("/health/db", new HealthCheckOptions
 });
 
 app.Run();
+
+// Exposto pra WebApplicationFactory<Program> conseguir usar em Jogos.Test (top-level statements geram Program internal por padrão)
+public partial class Program { }
