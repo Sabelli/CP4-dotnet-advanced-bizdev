@@ -16,7 +16,7 @@ namespace Jogos.Test.App
             _factory = factory;
         }
 
-        [Fact(DisplayName = "GET /api/plataforma sem registros retorna 204")]
+        [Fact]
         [Trait("Controller", "Plataforma")]
         public async Task Get_SemPlataformas_DeveRetornar204()
         {
@@ -37,7 +37,7 @@ namespace Jogos.Test.App
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
 
-        [Fact(DisplayName = "POST /api/plataforma com nome de 2 caracteres retorna 201")]
+        [Fact]
         [Trait("Controller", "Plataforma")]
         public async Task Post_NomeDoisCaracteres_DeveRetornar201()
         {
@@ -52,7 +52,7 @@ namespace Jogos.Test.App
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
 
-        [Fact(DisplayName = "POST /api/plataforma com nome de 1 caractere retorna 400")]
+        [Fact]
         [Trait("Controller", "Plataforma")]
         public async Task Post_NomeUmCaractere_DeveRetornar400()
         {
@@ -63,7 +63,7 @@ namespace Jogos.Test.App
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
-        [Fact(DisplayName = "POST /api/plataforma com nome duplicado retorna 409")]
+        [Fact]
         [Trait("Controller", "Plataforma")]
         public async Task Post_NomeDuplicado_DeveRetornar409()
         {

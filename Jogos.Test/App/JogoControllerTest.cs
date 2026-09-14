@@ -17,7 +17,7 @@ namespace Jogos.Test.App
             _factory = factory;
         }
 
-        [Fact(DisplayName = "GET /api/jogo sem registros retorna 204")]
+        [Fact]
         [Trait("Controller", "Jogo")]
         public async Task Get_SemJogos_DeveRetornar204()
         {
@@ -38,7 +38,7 @@ namespace Jogos.Test.App
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
 
-        [Fact(DisplayName = "GET /api/jogo/{id} inexistente retorna 404")]
+        [Fact]
         [Trait("Controller", "Jogo")]
         public async Task GetById_Inexistente_DeveRetornar404()
         {
@@ -53,7 +53,7 @@ namespace Jogos.Test.App
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact(DisplayName = "POST /api/jogo com dados válidos retorna 201")]
+        [Fact]
         [Trait("Controller", "Jogo")]
         public async Task Post_DadosValidos_DeveRetornar201()
         {
@@ -74,7 +74,7 @@ namespace Jogos.Test.App
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
 
-        [Fact(DisplayName = "POST /api/jogo com nome duplicado retorna 409")]
+        [Fact]
         [Trait("Controller", "Jogo")]
         public async Task Post_NomeDuplicado_DeveRetornar409()
         {
@@ -95,7 +95,7 @@ namespace Jogos.Test.App
             Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         }
 
-        [Fact(DisplayName = "POST /api/jogo/categoria/{idJogo} vínculo existente retorna 200")]
+        [Fact]
         [Trait("Controller", "Jogo")]
         public async Task PostCategoriaJogo_JogoECategoriaExistentes_DeveRetornar200()
         {
@@ -113,7 +113,7 @@ namespace Jogos.Test.App
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [Fact(DisplayName = "POST /api/jogo/categoria/{idJogo} jogo inexistente retorna 404")]
+        [Fact]
         [Trait("Controller", "Jogo")]
         public async Task PostCategoriaJogo_JogoInexistente_DeveRetornar404()
         {
@@ -131,7 +131,7 @@ namespace Jogos.Test.App
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact(DisplayName = "POST /api/jogo/categoria/{idJogo} id de categoria inexistente retorna 404")]
+        [Fact]
         [Trait("Controller", "Jogo")]
         public async Task PostCategoriaJogo_CategoriaInexistente_DeveRetornar404()
         {
@@ -149,7 +149,7 @@ namespace Jogos.Test.App
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact(DisplayName = "DELETE /api/jogo/plataforma/{idJogo} desvincula com 200")]
+        [Fact]
         [Trait("Controller", "Jogo")]
         public async Task DeletePlataformaJogo_VinculoExistente_DeveRetornar200()
         {
