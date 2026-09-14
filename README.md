@@ -296,9 +296,9 @@ Telemetria via OpenTelemetry + Azure Monitor. Connection string em `ApplicationI
 | GET | `/api/jogo` | Lista jogos (paginado) | 200 / 204 |
 | GET | `/api/jogo/{id}` | Busca jogo por id | 200 / 404 |
 | GET | `/api/jogo/nome/{nome}` | Busca jogos por nome (parcial) | 200 / 204 |
-| GET | `/api/jogo/plataforma/{plataforma}` | Lista jogos por plataforma (nome) | 200 / 204 |
-| GET | `/api/jogo/desenvolvedora/{idDesenvolvedora}` | Lista jogos por desenvolvedora | 200 / 204 |
-| GET | `/api/jogo/categoria/{idCategoria}` | Lista jogos por categoria | 200 / 204 |
+| GET | `/api/jogo/plataforma/{idPlataforma}` | Lista jogos por plataforma | 200 / 204 / 404 |
+| GET | `/api/jogo/desenvolvedora/{idDesenvolvedora}` | Lista jogos por desenvolvedora | 200 / 204 / 404 |
+| GET | `/api/jogo/categoria/{idCategoria}` | Lista jogos por categoria | 200 / 204 / 404 |
 | POST | `/api/jogo` | Cria jogo | 201 / 409 / 400 |
 | PUT | `/api/jogo/{id}` | Atualiza jogo | 200 / 404 / 400 |
 | DELETE | `/api/jogo/{id}` | Remove jogo | 200 / 404 |
@@ -308,6 +308,7 @@ Telemetria via OpenTelemetry + Azure Monitor. Connection string em `ApplicationI
 | DELETE | `/api/jogo/plataforma/{idJogo}` | Desvincula plataformas (lote) | 200 / 404 |
 
 > As listagens/filtros aceitam `?Deslocamento=&RegistroRetornado=` — ver [Comportamentos Transversais](#comportamentos-transversais).
+> Filtros por `plataforma`/`desenvolvedora`/`categoria` retornam `404` se o id não existir, e `204` se existir mas não tiver jogos vinculados.
 > Vínculos de Categoria/Plataforma são opcionais no `POST /api/jogo` (`categoriaIds`/`plataformaIds`) ou feitos depois pelos endpoints dedicados, que recebem uma lista de ids no corpo. Se algum id da lista não existir, a requisição inteira falha com `404` (mensagem lista o(s) id(s) faltante(s)) — mesma validação estrita aplicada ao `POST /api/jogo`. `PUT` não altera vínculos.
 
 **POST/DELETE `/api/jogo/categoria/{idJogo}` e `/api/jogo/plataforma/{idJogo}` — Body:**
@@ -351,7 +352,42 @@ Telemetria via OpenTelemetry + Azure Monitor. Connection string em `ApplicationI
 
 ---
 
+## Evidências de Testes
+
+Prints de todos os endpoints testados manualmente estão na pasta `prints/`, organizados por recurso:
+
+```
+prints/
+├── Categoria/       (5 endpoints)
+├── Desenvolvedora/  (5 endpoints)
+├── Plataforma/      (5 endpoints)
+├── Jogo/            (13 endpoints)
+├── Health/          (2 endpoints)
+├── Tests/           (3 evidências)
+└── Telemetria/      (1 evidência — Application Insights)
+```
+
+| Controller | Endpoints | Evidência |
+| :--- | :---: | :--- |
+| **Categoria** | 5 endpoints | [Visualizar Prints](prints/Categoria/) |
+| **Desenvolvedora** | 5 endpoints | [Visualizar Prints](prints/Desenvolvedora/) |
+| **Plataforma** | 5 endpoints | [Visualizar Prints](prints/Plataforma/) |
+| **Jogo** | 13 endpoints | [Visualizar Prints](prints/Jogo/) |
+| **Health** | 2 endpoints | [Visualizar Prints](prints/Health/) |
+
+> **Total:** 30 endpoints testados e documentados.
+
+Além dos prints por endpoint, também há evidências de execução da suíte de testes e de telemetria:
+
+| Evidência | Itens | Descrição | Link |
+| :--- | :---: | :--- | :--- |
+| **Tests** | 3 prints | Execução por trait (`Controller`, `Repository`, `UseCase`) | [Visualizar Prints](prints/Tests/) |
+| **Telemetria** | 1 print | Application Insights (OpenTelemetry) | [Visualizar Prints](prints/Telemetria/) |
+
+---
+
 ## Observações
 
 - `Categoria.Jogos` e `Desenvolvedora.Jogos` (navegação reversa) usam `[JsonIgnore]` — não aparecem nas respostas. Isso evita ciclo de serialização JSON (EF Core faz fixup automático das navegações quando entidades compartilhadas ficam trackadas no mesmo `DbContext`). Só `Jogo` expõe suas relações (`Desenvolvedora`, `Categorias`, `Plataformas`).
 - Checagem de duplicata por `Nome` é case-insensitive na aplicação (Categoria, Desenvolvedora, Plataforma e Jogo), além do índice único no banco.
+- Todo endpoint que retorna um `Jogo` (`GET`, `POST`, `PUT`, `DELETE` e vínculo/desvínculo de categoria/plataforma) traz `desenvolvedora`, `categorias` e `plataformas` preenchidos, não só a relação que o endpoint alterou.
