@@ -127,7 +127,7 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var resultado = await _jogoUseCase.ObterJogosPorNomeAsync(nome, Deslocamento, RegistroRetornado);
 
-                if (!resultado.Any())
+                if (!resultado.Data.Any())
                     return NoContent();
 
                 return Ok(resultado);
@@ -139,13 +139,14 @@ namespace Jogos.API.Presentation.Controllers
             }
         }
 
-        [HttpGet("plataforma/{plataforma}")]
+        [HttpGet("plataforma/{idPlataforma}")]
         [SwaggerOperation(
             Summary = "Lista jogos filtrando pela plataforma",
             Description = """
             ## Informações do Retorno:
-            * **Status 200 (OK):** Retorna os jogos disponíveis na plataforma informada (busca pelo nome da plataforma).
+            * **Status 200 (OK):** Retorna os jogos disponíveis na plataforma informada (busca pelo id da plataforma).
             * **Status 204 (No Content):** Executado com sucesso, porém nenhum jogo encontrado nessa plataforma.
+            * **Status 404 (Not Found):** Plataforma informada não existe.
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
 
             ## Observações:
@@ -154,25 +155,31 @@ namespace Jogos.API.Presentation.Controllers
         )]
         [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<JogoEntity>))]
         [SwaggerResponse(statusCode: 204, description: "Nenhum jogo encontrado nessa plataforma")]
+        [SwaggerResponse(statusCode: 404, description: "Plataforma informada não existe", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseListSample))]
         [EnableRateLimiting("politica_5_tentativas")]
-        public async Task<IActionResult> GetAllJogosByPlataforma(string plataforma, int Deslocamento = 0, int RegistroRetornado = 50)
+        public async Task<IActionResult> GetAllJogosByPlataforma(int idPlataforma, int Deslocamento = 0, int RegistroRetornado = 50)
         {
-            _logger.LogInformation("Listando jogos pela plataforma {Plataforma}", plataforma);
+            _logger.LogInformation("Listando jogos pela plataforma {PlataformaId}", idPlataforma);
 
             try
             {
-                var resultado = await _jogoUseCase.ObterJogosPorPlataformaAsync(plataforma, Deslocamento, RegistroRetornado);
+                var resultado = await _jogoUseCase.ObterJogosPorPlataformaAsync(idPlataforma, Deslocamento, RegistroRetornado);
 
-                if (!resultado.Any())
+                if (!resultado.Data.Any())
                     return NoContent();
 
                 return Ok(resultado);
             }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, "Plataforma {PlataformaId} não encontrada", idPlataforma);
+                return NotFound(ex.Message);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao listar jogos pela plataforma {Plataforma}", plataforma);
+                _logger.LogError(ex, "Erro ao listar jogos pela plataforma {PlataformaId}", idPlataforma);
                 return BadRequest(ex.Message);
             }
         }
@@ -184,6 +191,7 @@ namespace Jogos.API.Presentation.Controllers
             ## Informações do Retorno:
             * **Status 200 (OK):** Retorna os jogos da desenvolvedora informada.
             * **Status 204 (No Content):** Executado com sucesso, porém nenhum jogo encontrado para essa desenvolvedora.
+            * **Status 404 (Not Found):** Desenvolvedora informada não existe.
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
 
             ## Observações:
@@ -192,6 +200,7 @@ namespace Jogos.API.Presentation.Controllers
         )]
         [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<JogoEntity>))]
         [SwaggerResponse(statusCode: 204, description: "Nenhum jogo encontrado para essa desenvolvedora")]
+        [SwaggerResponse(statusCode: 404, description: "Desenvolvedora informada não existe", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseListSample))]
         [EnableRateLimiting("politica_5_tentativas")]
@@ -203,10 +212,15 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var resultado = await _jogoUseCase.ObterJogosPorDesenvolvedoraAsync(idDesenvolvedora, Deslocamento, RegistroRetornado);
 
-                if (!resultado.Any())
+                if (!resultado.Data.Any())
                     return NoContent();
 
                 return Ok(resultado);
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, "Desenvolvedora {DesenvolvedoraId} não encontrada", idDesenvolvedora);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -222,6 +236,7 @@ namespace Jogos.API.Presentation.Controllers
             ## Informações do Retorno:
             * **Status 200 (OK):** Retorna os jogos vinculados à categoria informada.
             * **Status 204 (No Content):** Executado com sucesso, porém nenhum jogo encontrado para essa categoria.
+            * **Status 404 (Not Found):** Categoria informada não existe.
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
 
             ## Observações:
@@ -230,6 +245,7 @@ namespace Jogos.API.Presentation.Controllers
         )]
         [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<JogoEntity>))]
         [SwaggerResponse(statusCode: 204, description: "Nenhum jogo encontrado para essa categoria")]
+        [SwaggerResponse(statusCode: 404, description: "Categoria informada não existe", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseListSample))]
         [EnableRateLimiting("politica_5_tentativas")]
@@ -241,10 +257,15 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var resultado = await _jogoUseCase.ObterJogosPorCategoriaAsync(idCategoria, Deslocamento, RegistroRetornado);
 
-                if (!resultado.Any())
+                if (!resultado.Data.Any())
                     return NoContent();
 
                 return Ok(resultado);
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, "Categoria {CategoriaId} não encontrada", idCategoria);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

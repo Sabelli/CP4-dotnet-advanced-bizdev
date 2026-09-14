@@ -109,7 +109,7 @@ namespace Jogos.API.Application.UseCases
             }
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterJogosPorNomeAsync(string nome, int Deslocamento, int RegistroRetornado)
+        public async Task<PageResultModel<IEnumerable<JogoEntity>>> ObterJogosPorNomeAsync(string nome, int Deslocamento, int RegistroRetornado)
         {
             try
             {
@@ -124,22 +124,22 @@ namespace Jogos.API.Application.UseCases
             }
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterJogosPorPlataformaAsync(string plataforma, int Deslocamento, int RegistroRetornado)
+        public async Task<PageResultModel<IEnumerable<JogoEntity>>> ObterJogosPorPlataformaAsync(int idPlataforma, int Deslocamento, int RegistroRetornado)
         {
             try
             {
-                _logger.LogInformation("Obtendo jogos pela plataforma {Plataforma}", plataforma);
+                _logger.LogInformation("Obtendo jogos pela plataforma {PlataformaId}", idPlataforma);
 
-                return await _jogoRepository.ObterPorPlataformaAsync(plataforma, Deslocamento, RegistroRetornado);
+                return await _jogoRepository.ObterPorPlataformaAsync(idPlataforma, Deslocamento, RegistroRetornado);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocorreu um erro ao obter jogos pela plataforma {Plataforma}", plataforma);
+                _logger.LogError(ex, "Ocorreu um erro ao obter jogos pela plataforma {PlataformaId}", idPlataforma);
                 throw;
             }
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterJogosPorDesenvolvedoraAsync(int idDesenvolvedora, int Deslocamento, int RegistroRetornado)
+        public async Task<PageResultModel<IEnumerable<JogoEntity>>> ObterJogosPorDesenvolvedoraAsync(int idDesenvolvedora, int Deslocamento, int RegistroRetornado)
         {
             try
             {
@@ -154,7 +154,7 @@ namespace Jogos.API.Application.UseCases
             }
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterJogosPorCategoriaAsync(int idCategoria, int Deslocamento, int RegistroRetornado)
+        public async Task<PageResultModel<IEnumerable<JogoEntity>>> ObterJogosPorCategoriaAsync(int idCategoria, int Deslocamento, int RegistroRetornado)
         {
             try
             {

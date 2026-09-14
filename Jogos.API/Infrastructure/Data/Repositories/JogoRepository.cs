@@ -176,23 +176,33 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterPorNomeAsync(string nome, int Deslocamento = 0, int RegistroRetornado = 50)
+        public async Task<PageResultModel<IEnumerable<JogoEntity>>> ObterPorNomeAsync(string nome, int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
                 if (Deslocamento < 0) Deslocamento = 0;
                 if (RegistroRetornado <= 0) RegistroRetornado = 50;
 
-                return await _context
-                    .Jogo
+                var query = _context.Jogo.Where(x => x.Nome.ToUpper().Contains(nome.ToUpper()));
+
+                var totalRegistros = await query.CountAsync();
+
+                var resultado = await query
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
                     .Include(x => x.Plataformas)
-                    .Where(x => x.Nome.ToUpper().Contains(nome.ToUpper()))
                     .OrderBy(x => x.Id)
                     .Skip(Deslocamento)
                     .Take(RegistroRetornado)
                     .ToListAsync();
+
+                return new PageResultModel<IEnumerable<JogoEntity>>
+                {
+                    Data = resultado,
+                    Deslocamento = Deslocamento,
+                    RegistroRetornado = RegistroRetornado,
+                    TotalRegistros = totalRegistros
+                };
             }
             catch (Exception ex)
             {
@@ -200,23 +210,42 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterPorPlataformaAsync(string plataforma, int Deslocamento = 0, int RegistroRetornado = 50)
+        public async Task<PageResultModel<IEnumerable<JogoEntity>>> ObterPorPlataformaAsync(int idPlataforma, int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
                 if (Deslocamento < 0) Deslocamento = 0;
                 if (RegistroRetornado <= 0) RegistroRetornado = 50;
 
-                return await _context
-                    .Jogo
+                var existe = await _context.Plataforma.CountAsync(x => x.Id == idPlataforma) > 0;
+
+                if (!existe)
+                    throw new EntidadeNaoEncontradaException($"Plataforma não encontrada para o id: {idPlataforma}.");
+
+                var query = _context.Jogo.Where(x => x.Plataformas!.Any(p => p.Id == idPlataforma));
+
+                var totalRegistros = await query.CountAsync();
+
+                var resultado = await query
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
                     .Include(x => x.Plataformas)
-                    .Where(x => x.Plataformas!.Any(p => p.Nome.ToUpper() == plataforma.ToUpper()))
                     .OrderBy(x => x.Id)
                     .Skip(Deslocamento)
                     .Take(RegistroRetornado)
                     .ToListAsync();
+
+                return new PageResultModel<IEnumerable<JogoEntity>>
+                {
+                    Data = resultado,
+                    Deslocamento = Deslocamento,
+                    RegistroRetornado = RegistroRetornado,
+                    TotalRegistros = totalRegistros
+                };
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -224,23 +253,42 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterPorDesenvolvedoraAsync(int idDesenvolvedora, int Deslocamento = 0, int RegistroRetornado = 50)
+        public async Task<PageResultModel<IEnumerable<JogoEntity>>> ObterPorDesenvolvedoraAsync(int idDesenvolvedora, int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
                 if (Deslocamento < 0) Deslocamento = 0;
                 if (RegistroRetornado <= 0) RegistroRetornado = 50;
 
-                return await _context
-                    .Jogo
+                var existe = await _context.Desenvolvedora.CountAsync(x => x.Id == idDesenvolvedora) > 0;
+
+                if (!existe)
+                    throw new EntidadeNaoEncontradaException($"Desenvolvedora não encontrada para o id: {idDesenvolvedora}.");
+
+                var query = _context.Jogo.Where(x => x.DesenvolvedoraId == idDesenvolvedora);
+
+                var totalRegistros = await query.CountAsync();
+
+                var resultado = await query
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
                     .Include(x => x.Plataformas)
-                    .Where(x => x.DesenvolvedoraId == idDesenvolvedora)
                     .OrderBy(x => x.Id)
                     .Skip(Deslocamento)
                     .Take(RegistroRetornado)
                     .ToListAsync();
+
+                return new PageResultModel<IEnumerable<JogoEntity>>
+                {
+                    Data = resultado,
+                    Deslocamento = Deslocamento,
+                    RegistroRetornado = RegistroRetornado,
+                    TotalRegistros = totalRegistros
+                };
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -248,23 +296,42 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<IEnumerable<JogoEntity>> ObterPorCategoriaAsync(int idCategoria, int Deslocamento = 0, int RegistroRetornado = 50)
+        public async Task<PageResultModel<IEnumerable<JogoEntity>>> ObterPorCategoriaAsync(int idCategoria, int Deslocamento = 0, int RegistroRetornado = 50)
         {
             try
             {
                 if (Deslocamento < 0) Deslocamento = 0;
                 if (RegistroRetornado <= 0) RegistroRetornado = 50;
 
-                return await _context
-                    .Jogo
+                var existe = await _context.Categoria.CountAsync(x => x.Id == idCategoria) > 0;
+
+                if (!existe)
+                    throw new EntidadeNaoEncontradaException($"Categoria não encontrada para o id: {idCategoria}.");
+
+                var query = _context.Jogo.Where(x => x.Categorias!.Any(c => c.Id == idCategoria));
+
+                var totalRegistros = await query.CountAsync();
+
+                var resultado = await query
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
                     .Include(x => x.Plataformas)
-                    .Where(x => x.Categorias!.Any(c => c.Id == idCategoria))
                     .OrderBy(x => x.Id)
                     .Skip(Deslocamento)
                     .Take(RegistroRetornado)
                     .ToListAsync();
+
+                return new PageResultModel<IEnumerable<JogoEntity>>
+                {
+                    Data = resultado,
+                    Deslocamento = Deslocamento,
+                    RegistroRetornado = RegistroRetornado,
+                    TotalRegistros = totalRegistros
+                };
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

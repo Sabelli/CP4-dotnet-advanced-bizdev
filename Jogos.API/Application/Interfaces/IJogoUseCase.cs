@@ -8,10 +8,10 @@ namespace Jogos.API.Application.Interfaces
     {
         Task<PageResultModel<IEnumerable<JogoEntity>>> ObterTodosJogosAsync(int Deslocamento, int RegistroRetornado);
         Task<JogoEntity?> ObterUmJogoAsync(int Id);
-        Task<IEnumerable<JogoEntity>> ObterJogosPorNomeAsync(string nome, int Deslocamento, int RegistroRetornado);
-        Task<IEnumerable<JogoEntity>> ObterJogosPorPlataformaAsync(string plataforma, int Deslocamento, int RegistroRetornado);
-        Task<IEnumerable<JogoEntity>> ObterJogosPorDesenvolvedoraAsync(int idDesenvolvedora, int Deslocamento, int RegistroRetornado);
-        Task<IEnumerable<JogoEntity>> ObterJogosPorCategoriaAsync(int idCategoria, int Deslocamento, int RegistroRetornado);
+        Task<PageResultModel<IEnumerable<JogoEntity>>> ObterJogosPorNomeAsync(string nome, int Deslocamento, int RegistroRetornado);
+        Task<PageResultModel<IEnumerable<JogoEntity>>> ObterJogosPorPlataformaAsync(int idPlataforma, int Deslocamento, int RegistroRetornado);
+        Task<PageResultModel<IEnumerable<JogoEntity>>> ObterJogosPorDesenvolvedoraAsync(int idDesenvolvedora, int Deslocamento, int RegistroRetornado);
+        Task<PageResultModel<IEnumerable<JogoEntity>>> ObterJogosPorCategoriaAsync(int idCategoria, int Deslocamento, int RegistroRetornado);
         Task<JogoEntity?> AdicionarJogoAsync(JogoRequestDto entity);
         Task<JogoEntity?> EditarJogoAsync(int Id, JogoUpdateRequestDto entity);
         Task<JogoEntity?> DeletarJogoAsync(int Id);
