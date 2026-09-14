@@ -1,6 +1,7 @@
 using Jogos.API.Application.Dtos;
 using Jogos.API.Application.UseCases;
 using Jogos.API.Domain.Entities;
+using Jogos.API.Domain.Exceptions;
 using Jogos.API.Domain.Interfaces;
 using Jogos.API.Domain.Models;
 using Microsoft.Extensions.Logging;
@@ -95,26 +96,48 @@ namespace Jogos.Test.App
         [Trait("UseCase", "Jogo")]
         public async Task VincularCategoriaAsync_DeveChamarRepository()
         {
+            // Arrange
             var jogo = new JogoEntity { Id = 1, Nome = "The Witcher 3" };
-            _jogoRepository.Setup(x => x.VincularCategoriaAsync(1, 2)).ReturnsAsync(jogo);
+            _jogoRepository.Setup(x => x.VincularCategoriaAsync(1, new[] { 2 })).ReturnsAsync(jogo);
 
-            var resultado = await _jogoUseCase.VincularCategoriaAsync(1, 2);
+            // Act
+            var resultado = await _jogoUseCase.VincularCategoriaAsync(1, new[] { 2 });
 
+            // Assert
             Assert.NotNull(resultado);
-            _jogoRepository.Verify(x => x.VincularCategoriaAsync(1, 2), Times.Once);
+            _jogoRepository.Verify(x => x.VincularCategoriaAsync(1, new[] { 2 }), Times.Once);
+        }
+
+        [Fact]
+        [Trait("UseCase", "Jogo")]
+        public async Task VincularCategoriaAsync_CategoriaInexistente_DevePropagarExcecao()
+        {
+            // Arrange
+            _jogoRepository
+                .Setup(x => x.VincularCategoriaAsync(1, new[] { 99999 }))
+                .ThrowsAsync(new EntidadeNaoEncontradaException("Categoria(s) não encontrada(s) para o(s) id(s): 99999."));
+
+            // Act
+            var excecao = await Record.ExceptionAsync(() => _jogoUseCase.VincularCategoriaAsync(1, new[] { 99999 }));
+
+            // Assert
+            Assert.IsType<EntidadeNaoEncontradaException>(excecao);
         }
 
         [Fact]
         [Trait("UseCase", "Jogo")]
         public async Task DesvincularPlataformaAsync_DeveChamarRepository()
         {
+            // Arrange
             var jogo = new JogoEntity { Id = 1, Nome = "The Witcher 3" };
-            _jogoRepository.Setup(x => x.DesvincularPlataformaAsync(1, 3)).ReturnsAsync(jogo);
+            _jogoRepository.Setup(x => x.DesvincularPlataformaAsync(1, new[] { 3 })).ReturnsAsync(jogo);
 
-            var resultado = await _jogoUseCase.DesvincularPlataformaAsync(1, 3);
+            // Act
+            var resultado = await _jogoUseCase.DesvincularPlataformaAsync(1, new[] { 3 });
 
+            // Assert
             Assert.NotNull(resultado);
-            _jogoRepository.Verify(x => x.DesvincularPlataformaAsync(1, 3), Times.Once);
+            _jogoRepository.Verify(x => x.DesvincularPlataformaAsync(1, new[] { 3 }), Times.Once);
         }
     }
 }

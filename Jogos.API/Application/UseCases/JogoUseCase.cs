@@ -169,33 +169,33 @@ namespace Jogos.API.Application.UseCases
             }
         }
 
-        public async Task<JogoEntity?> VincularCategoriaAsync(int idJogo, int idCategoria)
+        public async Task<JogoEntity?> VincularCategoriaAsync(int idJogo, IEnumerable<int> categoriaIds)
         {
             try
             {
-                _logger.LogInformation("Vinculando categoria {CategoriaId} ao jogo {JogoId}", idCategoria, idJogo);
+                _logger.LogInformation("Vinculando categorias {CategoriaIds} ao jogo {JogoId}", categoriaIds, idJogo);
 
-                var jogo = await _jogoRepository.VincularCategoriaAsync(idJogo, idCategoria);
+                var jogo = await _jogoRepository.VincularCategoriaAsync(idJogo, categoriaIds);
 
                 if (jogo is null)
-                    _logger.LogWarning("Jogo {JogoId} ou categoria {CategoriaId} não encontrados para vínculo", idJogo, idCategoria);
+                    _logger.LogWarning("Jogo {JogoId} não encontrado para vínculo", idJogo);
 
                 return jogo;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocorreu um erro ao vincular a categoria {CategoriaId} ao jogo {JogoId}", idCategoria, idJogo);
+                _logger.LogError(ex, "Ocorreu um erro ao vincular categorias {CategoriaIds} ao jogo {JogoId}", categoriaIds, idJogo);
                 throw;
             }
         }
 
-        public async Task<JogoEntity?> DesvincularCategoriaAsync(int idJogo, int idCategoria)
+        public async Task<JogoEntity?> DesvincularCategoriaAsync(int idJogo, IEnumerable<int> categoriaIds)
         {
             try
             {
-                _logger.LogInformation("Desvinculando categoria {CategoriaId} do jogo {JogoId}", idCategoria, idJogo);
+                _logger.LogInformation("Desvinculando categorias {CategoriaIds} do jogo {JogoId}", categoriaIds, idJogo);
 
-                var jogo = await _jogoRepository.DesvincularCategoriaAsync(idJogo, idCategoria);
+                var jogo = await _jogoRepository.DesvincularCategoriaAsync(idJogo, categoriaIds);
 
                 if (jogo is null)
                     _logger.LogWarning("Jogo {JogoId} não encontrado para desvínculo", idJogo);
@@ -204,38 +204,38 @@ namespace Jogos.API.Application.UseCases
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocorreu um erro ao desvincular a categoria {CategoriaId} do jogo {JogoId}", idCategoria, idJogo);
+                _logger.LogError(ex, "Ocorreu um erro ao desvincular categorias {CategoriaIds} do jogo {JogoId}", categoriaIds, idJogo);
                 throw;
             }
         }
 
-        public async Task<JogoEntity?> VincularPlataformaAsync(int idJogo, int idPlataforma)
+        public async Task<JogoEntity?> VincularPlataformaAsync(int idJogo, IEnumerable<int> plataformaIds)
         {
             try
             {
-                _logger.LogInformation("Vinculando plataforma {PlataformaId} ao jogo {JogoId}", idPlataforma, idJogo);
+                _logger.LogInformation("Vinculando plataformas {PlataformaIds} ao jogo {JogoId}", plataformaIds, idJogo);
 
-                var jogo = await _jogoRepository.VincularPlataformaAsync(idJogo, idPlataforma);
+                var jogo = await _jogoRepository.VincularPlataformaAsync(idJogo, plataformaIds);
 
                 if (jogo is null)
-                    _logger.LogWarning("Jogo {JogoId} ou plataforma {PlataformaId} não encontrados para vínculo", idJogo, idPlataforma);
+                    _logger.LogWarning("Jogo {JogoId} não encontrado para vínculo", idJogo);
 
                 return jogo;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocorreu um erro ao vincular a plataforma {PlataformaId} ao jogo {JogoId}", idPlataforma, idJogo);
+                _logger.LogError(ex, "Ocorreu um erro ao vincular plataformas {PlataformaIds} ao jogo {JogoId}", plataformaIds, idJogo);
                 throw;
             }
         }
 
-        public async Task<JogoEntity?> DesvincularPlataformaAsync(int idJogo, int idPlataforma)
+        public async Task<JogoEntity?> DesvincularPlataformaAsync(int idJogo, IEnumerable<int> plataformaIds)
         {
             try
             {
-                _logger.LogInformation("Desvinculando plataforma {PlataformaId} do jogo {JogoId}", idPlataforma, idJogo);
+                _logger.LogInformation("Desvinculando plataformas {PlataformaIds} do jogo {JogoId}", plataformaIds, idJogo);
 
-                var jogo = await _jogoRepository.DesvincularPlataformaAsync(idJogo, idPlataforma);
+                var jogo = await _jogoRepository.DesvincularPlataformaAsync(idJogo, plataformaIds);
 
                 if (jogo is null)
                     _logger.LogWarning("Jogo {JogoId} não encontrado para desvínculo", idJogo);
@@ -244,7 +244,7 @@ namespace Jogos.API.Application.UseCases
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocorreu um erro ao desvincular a plataforma {PlataformaId} do jogo {JogoId}", idPlataforma, idJogo);
+                _logger.LogError(ex, "Ocorreu um erro ao desvincular plataformas {PlataformaIds} do jogo {JogoId}", plataformaIds, idJogo);
                 throw;
             }
         }

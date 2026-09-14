@@ -1,4 +1,5 @@
 using Jogos.API.Domain.Entities;
+using Jogos.API.Domain.Exceptions;
 using Jogos.API.Infrastructure.Data;
 using Jogos.API.Infrastructure.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -105,6 +106,7 @@ namespace Jogos.Test.App
         [Trait("Repository", "Jogo")]
         public async Task VincularCategoriaAsync_DeveAdicionarCategoriaAoJogo()
         {
+            // Arrange
             var desenvolvedora = CriarDesenvolvedora();
             var categoria = new CategoriaEntity { Nome = "RPG" };
             var jogo = new JogoEntity { Nome = "The Witcher 3", Preco = 59.99, DataLancamento = new DateTime(2015, 5, 19), DesenvolvedoraId = desenvolvedora.Id };
@@ -112,16 +114,36 @@ namespace Jogos.Test.App
             _applicationContext.Jogo.Add(jogo);
             _applicationContext.SaveChanges();
 
-            var resultado = await _jogoRepository.VincularCategoriaAsync(jogo.Id, categoria.Id);
+            // Act
+            var resultado = await _jogoRepository.VincularCategoriaAsync(jogo.Id, [categoria.Id]);
 
+            // Assert
             Assert.NotNull(resultado);
             Assert.Contains(resultado!.Categorias!, x => x.Id == categoria.Id);
         }
 
         [Fact]
         [Trait("Repository", "Jogo")]
+        public async Task VincularCategoriaAsync_CategoriaInexistente_DeveLancarExcecao()
+        {
+            // Arrange
+            var desenvolvedora = CriarDesenvolvedora();
+            var jogo = new JogoEntity { Nome = "The Witcher 3", Preco = 59.99, DataLancamento = new DateTime(2015, 5, 19), DesenvolvedoraId = desenvolvedora.Id };
+            _applicationContext.Jogo.Add(jogo);
+            _applicationContext.SaveChanges();
+
+            // Act
+            var excecao = await Record.ExceptionAsync(() => _jogoRepository.VincularCategoriaAsync(jogo.Id, [99999]));
+
+            // Assert
+            Assert.IsType<EntidadeNaoEncontradaException>(excecao);
+        }
+
+        [Fact]
+        [Trait("Repository", "Jogo")]
         public async Task DesvincularCategoriaAsync_DeveRemoverCategoriaDoJogo()
         {
+            // Arrange
             var desenvolvedora = CriarDesenvolvedora();
             var categoria = new CategoriaEntity { Nome = "RPG" };
             _applicationContext.Categoria.Add(categoria);
@@ -130,8 +152,10 @@ namespace Jogos.Test.App
             var jogo = new JogoEntity { Nome = "The Witcher 3", Preco = 59.99, DataLancamento = new DateTime(2015, 5, 19), DesenvolvedoraId = desenvolvedora.Id };
             await _jogoRepository.AdicionarAsync(jogo, new List<int> { categoria.Id }, null);
 
-            var resultado = await _jogoRepository.DesvincularCategoriaAsync(jogo.Id, categoria.Id);
+            // Act
+            var resultado = await _jogoRepository.DesvincularCategoriaAsync(jogo.Id, [categoria.Id]);
 
+            // Assert
             Assert.NotNull(resultado);
             Assert.DoesNotContain(resultado!.Categorias ?? [], x => x.Id == categoria.Id);
         }

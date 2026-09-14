@@ -1,5 +1,6 @@
 using Jogos.API.Application.Dtos;
 using Jogos.API.Domain.Entities;
+using Jogos.API.Domain.Exceptions;
 using Jogos.API.Domain.Models;
 using Moq;
 using System.Net;
@@ -94,48 +95,80 @@ namespace Jogos.Test.App
             Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         }
 
-        [Fact(DisplayName = "POST /api/jogo/categoria/{idJogo}/{idCategoria} vínculo existente retorna 200")]
+        [Fact(DisplayName = "POST /api/jogo/categoria/{idJogo} vínculo existente retorna 200")]
         [Trait("Controller", "Jogo")]
         public async Task PostCategoriaJogo_JogoECategoriaExistentes_DeveRetornar200()
         {
+            // Arrange
             _factory.JogoUseCaseMock
-                .Setup(x => x.VincularCategoriaAsync(1, 2))
+                .Setup(x => x.VincularCategoriaAsync(1, new[] { 2 }))
                 .ReturnsAsync(new JogoEntity { Id = 1, Nome = "The Witcher 3" });
 
             using var client = _factory.CreateClient();
 
-            var response = await client.PostAsync("/api/jogo/categoria/1/2", null);
+            // Act
+            var response = await client.PostAsJsonAsync("/api/jogo/categoria/1", new[] { 2 });
 
+            // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [Fact(DisplayName = "POST /api/jogo/categoria/{idJogo}/{idCategoria} jogo inexistente retorna 404")]
+        [Fact(DisplayName = "POST /api/jogo/categoria/{idJogo} jogo inexistente retorna 404")]
         [Trait("Controller", "Jogo")]
         public async Task PostCategoriaJogo_JogoInexistente_DeveRetornar404()
         {
+            // Arrange
             _factory.JogoUseCaseMock
-                .Setup(x => x.VincularCategoriaAsync(99999, 2))
+                .Setup(x => x.VincularCategoriaAsync(99999, new[] { 2 }))
                 .ReturnsAsync((JogoEntity?)null);
 
             using var client = _factory.CreateClient();
 
-            var response = await client.PostAsync("/api/jogo/categoria/99999/2", null);
+            // Act
+            var response = await client.PostAsJsonAsync("/api/jogo/categoria/99999", new[] { 2 });
 
+            // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact(DisplayName = "DELETE /api/jogo/plataforma/{idJogo}/{idPlataforma} desvincula com 200")]
+        [Fact(DisplayName = "POST /api/jogo/categoria/{idJogo} id de categoria inexistente retorna 404")]
+        [Trait("Controller", "Jogo")]
+        public async Task PostCategoriaJogo_CategoriaInexistente_DeveRetornar404()
+        {
+            // Arrange
+            _factory.JogoUseCaseMock
+                .Setup(x => x.VincularCategoriaAsync(1, new[] { 99999 }))
+                .ThrowsAsync(new EntidadeNaoEncontradaException("Categoria(s) não encontrada(s) para o(s) id(s): 99999."));
+
+            using var client = _factory.CreateClient();
+
+            // Act
+            var response = await client.PostAsJsonAsync("/api/jogo/categoria/1", new[] { 99999 });
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact(DisplayName = "DELETE /api/jogo/plataforma/{idJogo} desvincula com 200")]
         [Trait("Controller", "Jogo")]
         public async Task DeletePlataformaJogo_VinculoExistente_DeveRetornar200()
         {
+            // Arrange
             _factory.JogoUseCaseMock
-                .Setup(x => x.DesvincularPlataformaAsync(1, 1))
+                .Setup(x => x.DesvincularPlataformaAsync(1, new[] { 1 }))
                 .ReturnsAsync(new JogoEntity { Id = 1, Nome = "The Witcher 3" });
 
             using var client = _factory.CreateClient();
 
-            var response = await client.DeleteAsync("/api/jogo/plataforma/1/1");
+            var request = new HttpRequestMessage(HttpMethod.Delete, "/api/jogo/plataforma/1")
+            {
+                Content = JsonContent.Create(new[] { 1 })
+            };
 
+            // Act
+            var response = await client.SendAsync(request);
+
+            // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }

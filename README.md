@@ -146,13 +146,13 @@ https://localhost:7001/swagger
 
 ## Testes
 
-Testes automatizados com **xUnit** no projeto `Jogos.Test` — 62 testes, cobrindo:
+Testes automatizados com **xUnit** no projeto `Jogos.Test` — 65 testes, cobrindo:
 
 - **Repositories** — testes de unidade via EF Core InMemory (`Microsoft.EntityFrameworkCore.InMemory`).
 - **Use Cases** — testes de unidade com os repositórios mockados via **Moq**.
 - **Controllers** — testes funcionais (integração) via `WebApplicationFactory` (`Microsoft.AspNetCore.Mvc.Testing`), com os use cases mockados.
 
-Cobre as 4 entidades: `Categoria`, `Desenvolvedora`, `Plataforma` e `Jogo` (incluindo vínculo/desvínculo N:N).
+Cobre as 4 entidades: `Categoria`, `Desenvolvedora`, `Plataforma` e `Jogo` (incluindo vínculo/desvínculo N:N em lote e o caso de id inexistente na lista, que lança `EntidadeNaoEncontradaException` → `404`).
 
 ### Executar todos os testes
 
@@ -302,13 +302,18 @@ Telemetria via OpenTelemetry + Azure Monitor. Connection string em `ApplicationI
 | POST | `/api/jogo` | Cria jogo | 201 / 409 / 400 |
 | PUT | `/api/jogo/{id}` | Atualiza jogo | 200 / 404 / 400 |
 | DELETE | `/api/jogo/{id}` | Remove jogo | 200 / 404 |
-| POST | `/api/jogo/categoria/{idJogo}/{idCategoria}` | Vincula categoria existente | 200 / 404 |
-| DELETE | `/api/jogo/categoria/{idJogo}/{idCategoria}` | Desvincula categoria | 200 / 404 |
-| POST | `/api/jogo/plataforma/{idJogo}/{idPlataforma}` | Vincula plataforma existente | 200 / 404 |
-| DELETE | `/api/jogo/plataforma/{idJogo}/{idPlataforma}` | Desvincula plataforma | 200 / 404 |
+| POST | `/api/jogo/categoria/{idJogo}` | Vincula categorias existentes (lote) | 200 / 404 / 400 |
+| DELETE | `/api/jogo/categoria/{idJogo}` | Desvincula categorias (lote) | 200 / 404 |
+| POST | `/api/jogo/plataforma/{idJogo}` | Vincula plataformas existentes (lote) | 200 / 404 / 400 |
+| DELETE | `/api/jogo/plataforma/{idJogo}` | Desvincula plataformas (lote) | 200 / 404 |
 
 > As listagens/filtros aceitam `?Deslocamento=&RegistroRetornado=` — ver [Comportamentos Transversais](#comportamentos-transversais).
-> Vínculos de Categoria/Plataforma são opcionais no `POST /api/jogo` (`categoriaIds`/`plataformaIds`) ou feitos depois, um de cada vez, pelos endpoints dedicados. `PUT` não altera vínculos.
+> Vínculos de Categoria/Plataforma são opcionais no `POST /api/jogo` (`categoriaIds`/`plataformaIds`) ou feitos depois pelos endpoints dedicados, que recebem uma lista de ids no corpo. Se algum id da lista não existir, a requisição inteira falha com `404` (mensagem lista o(s) id(s) faltante(s)) — mesma validação estrita aplicada ao `POST /api/jogo`. `PUT` não altera vínculos.
+
+**POST/DELETE `/api/jogo/categoria/{idJogo}` e `/api/jogo/plataforma/{idJogo}` — Body:**
+```json
+[1, 2, 3]
+```
 
 **POST — Body:**
 ```json

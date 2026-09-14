@@ -1,4 +1,5 @@
 using Jogos.API.Domain.Entities;
+using Jogos.API.Domain.Exceptions;
 using Jogos.API.Domain.Interfaces;
 using Jogos.API.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,34 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             _context = context;
         }
 
+        private static async Task<List<CategoriaEntity>> ResolverCategoriasOuFalharAsync(DbSet<CategoriaEntity> dbSet, IEnumerable<int> ids)
+        {
+            var idsList = ids.Distinct().ToList();
+            var resolvidas = await dbSet.Where(x => idsList.Contains(x.Id)).ToListAsync();
+
+            if (resolvidas.Count != idsList.Count)
+            {
+                var faltantes = idsList.Except(resolvidas.Select(x => x.Id));
+                throw new EntidadeNaoEncontradaException($"Categoria(s) não encontrada(s) para o(s) id(s): {string.Join(", ", faltantes)}.");
+            }
+
+            return resolvidas;
+        }
+
+        private static async Task<List<PlataformaEntity>> ResolverPlataformasOuFalharAsync(DbSet<PlataformaEntity> dbSet, IEnumerable<int> ids)
+        {
+            var idsList = ids.Distinct().ToList();
+            var resolvidas = await dbSet.Where(x => idsList.Contains(x.Id)).ToListAsync();
+
+            if (resolvidas.Count != idsList.Count)
+            {
+                var faltantes = idsList.Except(resolvidas.Select(x => x.Id));
+                throw new EntidadeNaoEncontradaException($"Plataforma(s) não encontrada(s) para o(s) id(s): {string.Join(", ", faltantes)}.");
+            }
+
+            return resolvidas;
+        }
+
         public async Task<JogoEntity?> AdicionarAsync(JogoEntity entity, IEnumerable<int>? categoriaIds, IEnumerable<int>? plataformaIds)
         {
             try
@@ -24,15 +53,19 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     return null;
 
                 if (categoriaIds is not null && categoriaIds.Any())
-                    entity.Categorias = await _context.Categoria.Where(x => categoriaIds.Contains(x.Id)).ToListAsync();
+                    entity.Categorias = await ResolverCategoriasOuFalharAsync(_context.Categoria, categoriaIds);
 
                 if (plataformaIds is not null && plataformaIds.Any())
-                    entity.Plataformas = await _context.Plataforma.Where(x => plataformaIds.Contains(x.Id)).ToListAsync();
+                    entity.Plataformas = await ResolverPlataformasOuFalharAsync(_context.Plataforma, plataformaIds);
 
                 _context.Jogo.Add(entity);
                 await _context.SaveChangesAsync();
 
                 return entity;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -231,24 +264,30 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<JogoEntity?> VincularCategoriaAsync(int idJogo, int idCategoria)
+        public async Task<JogoEntity?> VincularCategoriaAsync(int idJogo, IEnumerable<int> categoriaIds)
         {
             try
             {
                 var jogo = await _context.Jogo.Include(x => x.Categorias).FirstOrDefaultAsync(x => x.Id == idJogo);
-                var categoria = await _context.Categoria.FirstOrDefaultAsync(x => x.Id == idCategoria);
 
-                if (jogo is null || categoria is null)
+                if (jogo is null)
                     return null;
+
+                var categorias = await ResolverCategoriasOuFalharAsync(_context.Categoria, categoriaIds);
 
                 jogo.Categorias ??= [];
 
-                if (!jogo.Categorias.Any(x => x.Id == idCategoria))
-                    jogo.Categorias.Add(categoria);
+                foreach (var categoria in categorias)
+                    if (!jogo.Categorias.Any(x => x.Id == categoria.Id))
+                        jogo.Categorias.Add(categoria);
 
                 await _context.SaveChangesAsync();
 
                 return jogo;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -256,7 +295,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<JogoEntity?> DesvincularCategoriaAsync(int idJogo, int idCategoria)
+        public async Task<JogoEntity?> DesvincularCategoriaAsync(int idJogo, IEnumerable<int> categoriaIds)
         {
             try
             {
@@ -265,35 +304,13 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 if (jogo is null)
                     return null;
 
-                var categoria = jogo.Categorias?.FirstOrDefault(x => x.Id == idCategoria);
+                foreach (var idCategoria in categoriaIds)
+                {
+                    var categoria = jogo.Categorias?.FirstOrDefault(x => x.Id == idCategoria);
 
-                if (categoria is not null)
-                    jogo.Categorias!.Remove(categoria);
-
-                await _context.SaveChangesAsync();
-
-                return jogo;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
-        }
-
-        public async Task<JogoEntity?> VincularPlataformaAsync(int idJogo, int idPlataforma)
-        {
-            try
-            {
-                var jogo = await _context.Jogo.Include(x => x.Plataformas).FirstOrDefaultAsync(x => x.Id == idJogo);
-                var plataforma = await _context.Plataforma.FirstOrDefaultAsync(x => x.Id == idPlataforma);
-
-                if (jogo is null || plataforma is null)
-                    return null;
-
-                jogo.Plataformas ??= [];
-
-                if (!jogo.Plataformas.Any(x => x.Id == idPlataforma))
-                    jogo.Plataformas.Add(plataforma);
+                    if (categoria is not null)
+                        jogo.Categorias!.Remove(categoria);
+                }
 
                 await _context.SaveChangesAsync();
 
@@ -305,7 +322,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             }
         }
 
-        public async Task<JogoEntity?> DesvincularPlataformaAsync(int idJogo, int idPlataforma)
+        public async Task<JogoEntity?> VincularPlataformaAsync(int idJogo, IEnumerable<int> plataformaIds)
         {
             try
             {
@@ -314,10 +331,44 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 if (jogo is null)
                     return null;
 
-                var plataforma = jogo.Plataformas?.FirstOrDefault(x => x.Id == idPlataforma);
+                var plataformas = await ResolverPlataformasOuFalharAsync(_context.Plataforma, plataformaIds);
 
-                if (plataforma is not null)
-                    jogo.Plataformas!.Remove(plataforma);
+                jogo.Plataformas ??= [];
+
+                foreach (var plataforma in plataformas)
+                    if (!jogo.Plataformas.Any(x => x.Id == plataforma.Id))
+                        jogo.Plataformas.Add(plataforma);
+
+                await _context.SaveChangesAsync();
+
+                return jogo;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        public async Task<JogoEntity?> DesvincularPlataformaAsync(int idJogo, IEnumerable<int> plataformaIds)
+        {
+            try
+            {
+                var jogo = await _context.Jogo.Include(x => x.Plataformas).FirstOrDefaultAsync(x => x.Id == idJogo);
+
+                if (jogo is null)
+                    return null;
+
+                foreach (var idPlataforma in plataformaIds)
+                {
+                    var plataforma = jogo.Plataformas?.FirstOrDefault(x => x.Id == idPlataforma);
+
+                    if (plataforma is not null)
+                        jogo.Plataformas!.Remove(plataforma);
+                }
 
                 await _context.SaveChangesAsync();
 

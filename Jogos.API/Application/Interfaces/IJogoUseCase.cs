@@ -15,9 +15,9 @@ namespace Jogos.API.Application.Interfaces
         Task<JogoEntity?> AdicionarJogoAsync(JogoRequestDto entity);
         Task<JogoEntity?> EditarJogoAsync(int Id, JogoUpdateRequestDto entity);
         Task<JogoEntity?> DeletarJogoAsync(int Id);
-        Task<JogoEntity?> VincularCategoriaAsync(int idJogo, int idCategoria);
-        Task<JogoEntity?> DesvincularCategoriaAsync(int idJogo, int idCategoria);
-        Task<JogoEntity?> VincularPlataformaAsync(int idJogo, int idPlataforma);
-        Task<JogoEntity?> DesvincularPlataformaAsync(int idJogo, int idPlataforma);
+        Task<JogoEntity?> VincularCategoriaAsync(int idJogo, IEnumerable<int> categoriaIds);
+        Task<JogoEntity?> DesvincularCategoriaAsync(int idJogo, IEnumerable<int> categoriaIds);
+        Task<JogoEntity?> VincularPlataformaAsync(int idJogo, IEnumerable<int> plataformaIds);
+        Task<JogoEntity?> DesvincularPlataformaAsync(int idJogo, IEnumerable<int> plataformaIds);
     }
 }
