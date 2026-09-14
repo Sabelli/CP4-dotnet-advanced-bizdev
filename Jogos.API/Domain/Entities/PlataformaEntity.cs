@@ -13,7 +13,7 @@ namespace Jogos.API.Domain.Entities
         public int Id { get; set; }
 
         [Required(ErrorMessage = "O nome da plataforma é obrigatório")]
-        [StringLength(100, MinimumLength = 3, ErrorMessage = "O nome da plataforma deve ter entre 3 e 100 caracteres")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "O nome da plataforma deve ter entre 2 e 100 caracteres")]
         [Column("c_nome")]
         public string Nome { get; set; }
 
