@@ -303,15 +303,15 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha ao editar o jogo.
 
             ## Observações:
-            * `CategoriaIds`/`PlataformaIds` do corpo são ignorados na edição — use os endpoints de vínculo/desvínculo pra alterar essas relações.
+            * Edição não mexe em categorias/plataformas — use os endpoints de vínculo/desvínculo pra alterar essas relações.
             """
         )]
-        [SwaggerRequestExample(typeof(JogoRequestDto), typeof(JogoRequestSample))]
+        [SwaggerRequestExample(typeof(JogoUpdateRequestDto), typeof(JogoUpdateSample))]
         [SwaggerResponse(statusCode: 200, description: "Jogo editado com sucesso", type: typeof(JogoEntity))]
         [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar o jogo", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseSample))]
-        public async Task<IActionResult> Put(int id, JogoRequestDto model)
+        public async Task<IActionResult> Put(int id, JogoUpdateRequestDto model)
         {
             _logger.LogInformation("Editando jogo {JogoId}", id);
 

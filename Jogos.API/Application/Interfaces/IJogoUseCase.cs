@@ -13,7 +13,7 @@ namespace Jogos.API.Application.Interfaces
         Task<IEnumerable<JogoEntity>> ObterJogosPorDesenvolvedoraAsync(int idDesenvolvedora, int Deslocamento, int RegistroRetornado);
         Task<IEnumerable<JogoEntity>> ObterJogosPorCategoriaAsync(int idCategoria, int Deslocamento, int RegistroRetornado);
         Task<JogoEntity?> AdicionarJogoAsync(JogoRequestDto entity);
-        Task<JogoEntity?> EditarJogoAsync(int Id, JogoRequestDto entity);
+        Task<JogoEntity?> EditarJogoAsync(int Id, JogoUpdateRequestDto entity);
         Task<JogoEntity?> DeletarJogoAsync(int Id);
         Task<JogoEntity?> VincularCategoriaAsync(int idJogo, int idCategoria);
         Task<JogoEntity?> DesvincularCategoriaAsync(int idJogo, int idCategoria);

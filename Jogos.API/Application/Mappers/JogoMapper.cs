@@ -15,5 +15,16 @@ namespace Jogos.API.Application.Mappers
                 DesenvolvedoraId = obj.DesenvolvedoraId
             };
         }
+
+        public static JogoEntity ToJogoEntity(this JogoUpdateRequestDto obj)
+        {
+            return new JogoEntity
+            {
+                Nome = obj.Nome,
+                Preco = obj.Preco,
+                DataLancamento = obj.DataLancamento,
+                DesenvolvedoraId = obj.DesenvolvedoraId
+            };
+        }
     }
 }

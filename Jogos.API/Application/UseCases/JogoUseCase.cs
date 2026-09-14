@@ -54,7 +54,7 @@ namespace Jogos.API.Application.UseCases
             }
         }
 
-        public async Task<JogoEntity?> EditarJogoAsync(int Id, JogoRequestDto entity)
+        public async Task<JogoEntity?> EditarJogoAsync(int Id, JogoUpdateRequestDto entity)
         {
             try
             {
