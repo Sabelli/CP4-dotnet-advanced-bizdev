@@ -191,7 +191,7 @@ A resposta (`200 OK`) vem em um envelope com metadados de paginação (`PageResu
 {
   "data": [ { "id": 1, "nome": "The Witcher 3" } ],
   "deslocamento": 0,
-  "registroRetornado": 50,
+  "registroRetornado": 10,
   "totalRegistros": 1
 }
 ```
