@@ -1,5 +1,6 @@
 using Jogos.API.Application.Dtos;
 using Jogos.API.Domain.Entities;
+using Jogos.API.Domain.Exceptions;
 using Jogos.API.Domain.Models;
 using Moq;
 using System.Net;
@@ -46,7 +47,7 @@ namespace Jogos.Test.App
         {
             _factory.CategoriaUseCaseMock
                 .Setup(x => x.ObterUmaCategoriaAsync(99999))
-                .ReturnsAsync((CategoriaEntity?)null);
+                .ThrowsAsync(new EntidadeNaoEncontradaException("Categoria não encontrada para o id: 99999."));
 
             using var client = _factory.CreateClient();
 
@@ -102,7 +103,7 @@ namespace Jogos.Test.App
         {
             _factory.CategoriaUseCaseMock
                 .Setup(x => x.DeletarCategoriaAsync(99999))
-                .ReturnsAsync((CategoriaEntity?)null);
+                .ThrowsAsync(new EntidadeNaoEncontradaException("Categoria não encontrada para o id: 99999."));
 
             using var client = _factory.CreateClient();
 

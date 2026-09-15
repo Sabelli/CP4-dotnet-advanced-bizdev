@@ -44,7 +44,7 @@ namespace Jogos.Test.App
         {
             _factory.JogoUseCaseMock
                 .Setup(x => x.ObterUmJogoAsync(99999))
-                .ReturnsAsync((JogoEntity?)null);
+                .ThrowsAsync(new EntidadeNaoEncontradaException("Jogo não encontrado para o id: 99999."));
 
             using var client = _factory.CreateClient();
 
@@ -120,7 +120,7 @@ namespace Jogos.Test.App
             // Arrange
             _factory.JogoUseCaseMock
                 .Setup(x => x.VincularCategoriaAsync(99999, new[] { 2 }))
-                .ReturnsAsync((JogoEntity?)null);
+                .ThrowsAsync(new EntidadeNaoEncontradaException("Jogo não encontrado para o id: 99999."));
 
             using var client = _factory.CreateClient();
 

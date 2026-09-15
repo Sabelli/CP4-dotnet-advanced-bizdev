@@ -1,4 +1,5 @@
 using Jogos.API.Domain.Entities;
+using Jogos.API.Domain.Exceptions;
 using Jogos.API.Infrastructure.Data;
 using Jogos.API.Infrastructure.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -60,11 +61,10 @@ namespace Jogos.Test.App
 
         [Fact]
         [Trait("Repository", "Categoria")]
-        public async Task ObterUmAsync_IdInexistente_DeveRetornarNull()
+        public async Task ObterUmAsync_IdInexistente_DeveLancarExcecao()
         {
-            var resultado = await _categoriaRepository.ObterUmAsync(99999);
-
-            Assert.Null(resultado);
+            await Assert.ThrowsAsync<EntidadeNaoEncontradaException>(
+                () => _categoriaRepository.ObterUmAsync(99999));
         }
 
         [Fact]

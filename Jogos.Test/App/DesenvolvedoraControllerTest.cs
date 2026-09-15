@@ -1,5 +1,6 @@
 using Jogos.API.Application.Dtos;
 using Jogos.API.Domain.Entities;
+using Jogos.API.Domain.Exceptions;
 using Jogos.API.Domain.Models;
 using Moq;
 using System.Net;
@@ -43,7 +44,7 @@ namespace Jogos.Test.App
         {
             _factory.DesenvolvedoraUseCaseMock
                 .Setup(x => x.ObterUmaDesenvolvedoraAsync(99999))
-                .ReturnsAsync((DesenvolvedoraEntity?)null);
+                .ThrowsAsync(new EntidadeNaoEncontradaException("Desenvolvedora não encontrada para o id: 99999."));
 
             using var client = _factory.CreateClient();
 

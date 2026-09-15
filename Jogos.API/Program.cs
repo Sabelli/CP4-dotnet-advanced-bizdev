@@ -70,17 +70,20 @@ builder.Services.Configure<GzipCompressionProviderOptions>(options => {
 });
 
 // Adicionando Rate Limiter
-builder.Services.AddRateLimiter(options => {
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddRateLimiter(options => {
 
-    options.AddFixedWindowLimiter(policyName: "politica_5_tentativas", opt => {
-        opt.PermitLimit = 5;
-        opt.Window = TimeSpan.FromSeconds(20);
-        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-        opt.QueueLimit = 2;
+        options.AddFixedWindowLimiter(policyName: "politica_5_tentativas", opt => {
+            opt.PermitLimit = 5;
+            opt.Window = TimeSpan.FromSeconds(20);
+            opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+            opt.QueueLimit = 2;
+        });
+
+        options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     });
-
-    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-});
+}
 
 // Adicionando Health Checks
 builder.Services.AddHealthChecks()
@@ -121,7 +124,10 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.UseRateLimiter();
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    app.UseRateLimiter();
+}
 app.UseResponseCompression();
 
 app.MapControllers();
