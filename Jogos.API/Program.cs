@@ -59,6 +59,9 @@ builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 builder.Services.AddResponseCompression(options => {
     options.Providers.Add<BrotliCompressionProvider>();
     options.Providers.Add<GzipCompressionProvider>();
+    options.EnableForHttps = true;
+    // application/json não vem no default do ASP.NET, precisa adicionar pra API (toda JSON) ser compactada
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/json" });
 });
 
 builder.Services.Configure<BrotliCompressionProviderOptions>(options => {

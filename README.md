@@ -206,7 +206,15 @@ Desabilitado no ambiente `Testing` (`Program.cs`, guardado por `IsEnvironment("T
 
 ### Compressão de Resposta
 
-Brotli e Gzip habilitados (nível `Fastest`), negociados via header `Accept-Encoding`.
+Brotli e Gzip habilitados (nível `Fastest`), negociados via header `Accept-Encoding`. `application/json` foi adicionado ao `MimeTypes` (não é default do ASP.NET), já que toda resposta da API é JSON.
+
+Testar:
+
+```bash
+curl -H "Accept-Encoding: gzip" -i https://localhost:7001/api/jogo
+```
+
+Resposta deve trazer o header `Content-Encoding: gzip` (ou `br`, se negociado Brotli).
 
 ---
 
