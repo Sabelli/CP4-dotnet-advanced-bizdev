@@ -37,7 +37,7 @@ CP4-dotnet-advanced-bizdev/
 │   │   ├── Interfaces/                 # contratos de repositório
 │   │   └── Models/                     # PageResultModel<T>
 │   ├── Application/
-│   │   ├── Dtos/                       # DTOs de request
+│   │   ├── Dtos/                       # DTOs de request e response
 │   │   ├── Interfaces/                 # contratos de use case
 │   │   ├── Mappers/                    # DTO -> Entity
 │   │   └── UseCases/                   # regras de negócio
@@ -244,7 +244,7 @@ Telemetria via OpenTelemetry + Azure Monitor. Connection string em `ApplicationI
 | GET | `/api/categoria` | Lista categorias (paginado) | 200 / 204 |
 | GET | `/api/categoria/{id}` | Busca categoria por id | 200 / 404 |
 | POST | `/api/categoria` | Cria categoria | 201 / 409 / 400 |
-| PUT | `/api/categoria/{id}` | Atualiza categoria | 200 / 404 / 400 |
+| PUT | `/api/categoria/{id}` | Atualiza categoria | 200 / 404 / 409 / 400 |
 | DELETE | `/api/categoria/{id}` | Remove categoria | 200 / 404 |
 
 **POST / PUT — Body:**
@@ -261,7 +261,7 @@ Telemetria via OpenTelemetry + Azure Monitor. Connection string em `ApplicationI
 | GET | `/api/desenvolvedora` | Lista desenvolvedoras (paginado) | 200 / 204 |
 | GET | `/api/desenvolvedora/{id}` | Busca desenvolvedora por id | 200 / 404 |
 | POST | `/api/desenvolvedora` | Cria desenvolvedora | 201 / 409 / 400 |
-| PUT | `/api/desenvolvedora/{id}` | Atualiza desenvolvedora | 200 / 404 / 400 |
+| PUT | `/api/desenvolvedora/{id}` | Atualiza desenvolvedora | 200 / 404 / 409 / 400 |
 | DELETE | `/api/desenvolvedora/{id}` | Remove desenvolvedora | 200 / 404 |
 
 **POST / PUT — Body:**
@@ -278,7 +278,7 @@ Telemetria via OpenTelemetry + Azure Monitor. Connection string em `ApplicationI
 | GET | `/api/plataforma` | Lista plataformas (paginado) | 200 / 204 |
 | GET | `/api/plataforma/{id}` | Busca plataforma por id | 200 / 404 |
 | POST | `/api/plataforma` | Cria plataforma | 201 / 409 / 400 |
-| PUT | `/api/plataforma/{id}` | Atualiza plataforma | 200 / 404 / 400 |
+| PUT | `/api/plataforma/{id}` | Atualiza plataforma | 200 / 404 / 409 / 400 |
 | DELETE | `/api/plataforma/{id}` | Remove plataforma | 200 / 404 |
 
 **POST / PUT — Body:**
@@ -299,8 +299,8 @@ Telemetria via OpenTelemetry + Azure Monitor. Connection string em `ApplicationI
 | GET | `/api/jogo/plataforma/{idPlataforma}` | Lista jogos por plataforma | 200 / 204 / 404 |
 | GET | `/api/jogo/desenvolvedora/{idDesenvolvedora}` | Lista jogos por desenvolvedora | 200 / 204 / 404 |
 | GET | `/api/jogo/categoria/{idCategoria}` | Lista jogos por categoria | 200 / 204 / 404 |
-| POST | `/api/jogo` | Cria jogo | 201 / 409 / 400 |
-| PUT | `/api/jogo/{id}` | Atualiza jogo | 200 / 404 / 400 |
+| POST | `/api/jogo` | Cria jogo | 201 / 404 / 409 / 400 |
+| PUT | `/api/jogo/{id}` | Atualiza jogo | 200 / 404 / 409 / 400 |
 | DELETE | `/api/jogo/{id}` | Remove jogo | 200 / 404 |
 | POST | `/api/jogo/categoria/{idJogo}` | Vincula categorias existentes (lote) | 200 / 404 / 400 |
 | DELETE | `/api/jogo/categoria/{idJogo}` | Desvincula categorias (lote) | 200 / 404 |
@@ -310,6 +310,7 @@ Telemetria via OpenTelemetry + Azure Monitor. Connection string em `ApplicationI
 > As listagens/filtros aceitam `?Deslocamento=&RegistroRetornado=` — ver [Comportamentos Transversais](#comportamentos-transversais).
 > Filtros por `plataforma`/`desenvolvedora`/`categoria` retornam `404` se o id não existir, e `204` se existir mas não tiver jogos vinculados.
 > Vínculos de Categoria/Plataforma são opcionais no `POST /api/jogo` (`categoriaIds`/`plataformaIds`) ou feitos depois pelos endpoints dedicados, que recebem uma lista de ids no corpo. Se algum id da lista não existir, a requisição inteira falha com `404` (mensagem lista o(s) id(s) faltante(s)) — mesma validação estrita aplicada ao `POST /api/jogo`. `PUT` não altera vínculos.
+> `POST /api/jogo` valida `desenvolvedoraId`, `categoriaIds` e `plataformaIds` juntos: se mais de um vier inválido ao mesmo tempo, o `404` retorna todas as mensagens de erro concatenadas numa única resposta, em vez de parar no primeiro problema.
 
 **POST/DELETE `/api/jogo/categoria/{idJogo}` e `/api/jogo/plataforma/{idJogo}` — Body:**
 ```json
@@ -389,5 +390,6 @@ Além dos prints por endpoint, também há evidências de execução da suíte d
 ## Observações
 
 - `Categoria.Jogos` e `Desenvolvedora.Jogos` (navegação reversa) usam `[JsonIgnore]` — não aparecem nas respostas. Isso evita ciclo de serialização JSON (EF Core faz fixup automático das navegações quando entidades compartilhadas ficam trackadas no mesmo `DbContext`). Só `Jogo` expõe suas relações (`Desenvolvedora`, `Categorias`, `Plataformas`).
-- Checagem de duplicata por `Nome` é case-insensitive na aplicação (Categoria, Desenvolvedora, Plataforma e Jogo), além do índice único no banco.
+- Checagem de duplicata por `Nome` é case-insensitive na aplicação (Categoria, Desenvolvedora, Plataforma e Jogo), além do índice único no banco — aplicada tanto no `POST` (nome já existente) quanto no `PUT` (renomear pra um nome que já existe em outro registro), ambos retornando `409` com mensagem clara.
 - Todo endpoint que retorna um `Jogo` (`GET`, `POST`, `PUT`, `DELETE` e vínculo/desvínculo de categoria/plataforma) traz `desenvolvedora`, `categorias` e `plataformas` preenchidos, não só a relação que o endpoint alterou.
+- Todas as respostas (`GET`, `POST`, `PUT`, `DELETE`) usam DTOs de resposta dedicados (`JogoResponseDto`, `CategoriaResponseDto`, `DesenvolvedoraResponseDto`, `PlataformaResponseDto`) em vez da entidade EF crua.
