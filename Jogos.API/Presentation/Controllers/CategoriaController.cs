@@ -2,6 +2,7 @@ using Jogos.API.Application.Dtos;
 using Jogos.API.Application.Interfaces;
 using Jogos.API.Application.Mappers;
 using Jogos.API.Doc.Samples;
+using Jogos.API.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Swashbuckle.AspNetCore.Annotations;
@@ -145,6 +146,7 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerRequestExample(typeof(CategoriaRequestDto), typeof(CategoriaRequestSample))]
         [SwaggerResponse(statusCode: 200, description: "Categoria editada com sucesso", type: typeof(CategoriaResponseDto))]
         [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada")]
+        [SwaggerResponse(statusCode: 409, description: "Já existe uma categoria com esse nome", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar a categoria", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(CategoriaResponseSample))]
         public async Task<IActionResult> Put(int id, CategoriaRequestDto model)
@@ -162,6 +164,11 @@ namespace Jogos.API.Presentation.Controllers
                 }
 
                 return Ok(categoria.ToResponseDto());
+            }
+            catch (NomeDuplicadoException ex)
+            {
+                _logger.LogWarning(ex, "Nome duplicado ao editar categoria {CategoriaId}", id);
+                return Conflict(ex.Message);
             }
             catch (Exception ex)
             {

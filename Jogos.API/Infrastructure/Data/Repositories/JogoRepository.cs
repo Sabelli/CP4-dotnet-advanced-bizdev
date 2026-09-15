@@ -167,6 +167,11 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 if (desenvolvedora is null)
                     throw new EntidadeNaoEncontradaException($"Desenvolvedora não encontrada para o id: {entity.DesenvolvedoraId}.");
 
+                var existe = await _context.Jogo.CountAsync(x => x.Nome.ToUpper() == entity.Nome.ToUpper() && x.Id != Id) > 0;
+
+                if (existe)
+                    throw new NomeDuplicadoException($"Já existe um jogo com o nome '{entity.Nome}'.");
+
                 jogo.Nome = entity.Nome;
                 jogo.Preco = entity.Preco;
                 jogo.DataLancamento = entity.DataLancamento;
@@ -179,6 +184,10 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 return jogo;
             }
             catch (EntidadeNaoEncontradaException)
+            {
+                throw;
+            }
+            catch (NomeDuplicadoException)
             {
                 throw;
             }

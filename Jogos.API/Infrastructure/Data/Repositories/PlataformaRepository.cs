@@ -1,4 +1,5 @@
 using Jogos.API.Domain.Entities;
+using Jogos.API.Domain.Exceptions;
 using Jogos.API.Domain.Interfaces;
 using Jogos.API.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -63,12 +64,21 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 if (plataforma is null)
                     return null;
 
+                var existe = await _context.Plataforma.CountAsync(x => x.Nome.ToUpper() == entity.Nome.ToUpper() && x.Id != Id) > 0;
+
+                if (existe)
+                    throw new NomeDuplicadoException($"Já existe uma plataforma com o nome '{entity.Nome}'.");
+
                 plataforma.Nome = entity.Nome;
 
                 _context.Plataforma.Update(plataforma);
                 await _context.SaveChangesAsync();
 
                 return plataforma;
+            }
+            catch (NomeDuplicadoException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

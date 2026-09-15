@@ -337,6 +337,7 @@ namespace Jogos.API.Presentation.Controllers
         [SwaggerRequestExample(typeof(JogoUpdateRequestDto), typeof(JogoUpdateSample))]
         [SwaggerResponse(statusCode: 200, description: "Jogo editado com sucesso", type: typeof(JogoResponseDto))]
         [SwaggerResponse(statusCode: 404, description: "Jogo ou desenvolvedora não encontrado")]
+        [SwaggerResponse(statusCode: 409, description: "Já existe um jogo com esse nome", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar o jogo", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(JogoCreatedSample))]
         public async Task<IActionResult> Put(int id, JogoUpdateRequestDto model)
@@ -359,6 +360,11 @@ namespace Jogos.API.Presentation.Controllers
             {
                 _logger.LogWarning(ex, "Desenvolvedora não encontrada para o id: {DesenvolvedoraId}.", model.DesenvolvedoraId);
                 return NotFound(ex.Message);
+            }
+            catch (NomeDuplicadoException ex)
+            {
+                _logger.LogWarning(ex, "Nome duplicado ao editar jogo {JogoId}", id);
+                return Conflict(ex.Message);
             }
             catch (Exception ex)
             {
