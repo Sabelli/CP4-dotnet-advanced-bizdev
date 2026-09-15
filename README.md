@@ -200,7 +200,7 @@ Ordenação por `Id` ascendente.
 
 ### Rate Limiting
 
-Fixed window (`politica_5_tentativas`), aplicada em todo GET de listagem/filtro: **5 requisições a cada 20 segundos**, fila de 2. Ao exceder: **429 Too Many Requests**.
+Fixed window particionado por IP do cliente (`politica_5_tentativas`), aplicada em todo GET de listagem/filtro: **5 requisições a cada 20 segundos por IP**, fila de 2. Ao exceder: **429 Too Many Requests**.
 
 Desabilitado no ambiente `Testing` (`Program.cs`, guardado por `IsEnvironment("Testing")`) para a suíte de testes não compartilhar o mesmo bucket entre os métodos de uma mesma classe de teste.
 
