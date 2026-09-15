@@ -42,12 +42,16 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 var desenvolvedora = await _context.Desenvolvedora.FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (desenvolvedora is null)
-                    return null;
+                    throw new EntidadeNaoEncontradaException($"Desenvolvedora não encontrada para o id: {Id}.");
 
                 _context.Desenvolvedora.Remove(desenvolvedora);
                 await _context.SaveChangesAsync();
 
                 return desenvolvedora;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -62,7 +66,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 var desenvolvedora = await _context.Desenvolvedora.FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (desenvolvedora is null)
-                    return null;
+                    throw new EntidadeNaoEncontradaException($"Desenvolvedora não encontrada para o id: {Id}.");
 
                 var existe = await _context.Desenvolvedora.CountAsync(x => x.Nome.ToUpper() == entity.Nome.ToUpper() && x.Id != Id) > 0;
 
@@ -75,6 +79,10 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 await _context.SaveChangesAsync();
 
                 return desenvolvedora;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (NomeDuplicadoException)
             {
@@ -120,9 +128,18 @@ namespace Jogos.API.Infrastructure.Data.Repositories
         {
             try
             {
-                return await _context
+                var desenvolvedora = await _context
                     .Desenvolvedora
                     .FirstOrDefaultAsync(x => x.Id == Id);
+
+                if (desenvolvedora is null)
+                    throw new EntidadeNaoEncontradaException($"Desenvolvedora não encontrada para o id: {Id}.");
+
+                return desenvolvedora;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

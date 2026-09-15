@@ -40,12 +40,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Deletando jogo {JogoId}", Id);
 
-                var jogo = await _jogoRepository.DeletarAsync(Id);
-
-                if (jogo is null)
-                    _logger.LogWarning("Jogo {JogoId} não encontrado para deleção", Id);
-
-                return jogo;
+                return await _jogoRepository.DeletarAsync(Id);
             }
             catch (Exception ex)
             {
@@ -60,12 +55,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Editando jogo {JogoId}", Id);
 
-                var jogo = await _jogoRepository.EditarAsync(Id, entity.ToJogoEntity());
-
-                if (jogo is null)
-                    _logger.LogWarning("Jogo {JogoId} não encontrado para edição", Id);
-
-                return jogo;
+                return await _jogoRepository.EditarAsync(Id, entity.ToJogoEntity());
             }
             catch (Exception ex)
             {
@@ -95,12 +85,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Obtendo jogo {JogoId}", Id);
 
-                var jogo = await _jogoRepository.ObterUmAsync(Id);
-
-                if (jogo is null)
-                    _logger.LogWarning("Jogo {JogoId} não encontrado", Id);
-
-                return jogo;
+                return await _jogoRepository.ObterUmAsync(Id);
             }
             catch (Exception ex)
             {
@@ -175,12 +160,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Vinculando categorias {CategoriaIds} ao jogo {JogoId}", categoriaIds, idJogo);
 
-                var jogo = await _jogoRepository.VincularCategoriaAsync(idJogo, categoriaIds);
-
-                if (jogo is null)
-                    _logger.LogWarning("Jogo {JogoId} não encontrado para vínculo", idJogo);
-
-                return jogo;
+                return await _jogoRepository.VincularCategoriaAsync(idJogo, categoriaIds);
             }
             catch (Exception ex)
             {
@@ -195,12 +175,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Desvinculando categorias {CategoriaIds} do jogo {JogoId}", categoriaIds, idJogo);
 
-                var jogo = await _jogoRepository.DesvincularCategoriaAsync(idJogo, categoriaIds);
-
-                if (jogo is null)
-                    _logger.LogWarning("Jogo {JogoId} não encontrado para desvínculo", idJogo);
-
-                return jogo;
+                return await _jogoRepository.DesvincularCategoriaAsync(idJogo, categoriaIds);
             }
             catch (Exception ex)
             {
@@ -215,12 +190,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Vinculando plataformas {PlataformaIds} ao jogo {JogoId}", plataformaIds, idJogo);
 
-                var jogo = await _jogoRepository.VincularPlataformaAsync(idJogo, plataformaIds);
-
-                if (jogo is null)
-                    _logger.LogWarning("Jogo {JogoId} não encontrado para vínculo", idJogo);
-
-                return jogo;
+                return await _jogoRepository.VincularPlataformaAsync(idJogo, plataformaIds);
             }
             catch (Exception ex)
             {
@@ -235,12 +205,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Desvinculando plataformas {PlataformaIds} do jogo {JogoId}", plataformaIds, idJogo);
 
-                var jogo = await _jogoRepository.DesvincularPlataformaAsync(idJogo, plataformaIds);
-
-                if (jogo is null)
-                    _logger.LogWarning("Jogo {JogoId} não encontrado para desvínculo", idJogo);
-
-                return jogo;
+                return await _jogoRepository.DesvincularPlataformaAsync(idJogo, plataformaIds);
             }
             catch (Exception ex)
             {

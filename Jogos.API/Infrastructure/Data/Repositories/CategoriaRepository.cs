@@ -42,12 +42,16 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 var categoria = await _context.Categoria.FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (categoria is null)
-                    return null;
+                    throw new EntidadeNaoEncontradaException($"Categoria não encontrada para o id: {Id}.");
 
                 _context.Categoria.Remove(categoria);
                 await _context.SaveChangesAsync();
 
                 return categoria;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -62,7 +66,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 var categoria = await _context.Categoria.FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (categoria is null)
-                    return null;
+                    throw new EntidadeNaoEncontradaException($"Categoria não encontrada para o id: {Id}.");
 
                 var existe = await _context.Categoria.CountAsync(x => x.Nome.ToUpper() == entity.Nome.ToUpper() && x.Id != Id) > 0;
 
@@ -75,6 +79,10 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 await _context.SaveChangesAsync();
 
                 return categoria;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (NomeDuplicadoException)
             {
@@ -120,9 +128,18 @@ namespace Jogos.API.Infrastructure.Data.Repositories
         {
             try
             {
-                return await _context
+                var categoria = await _context
                     .Categoria
                     .FirstOrDefaultAsync(x => x.Id == Id);
+
+                if (categoria is null)
+                    throw new EntidadeNaoEncontradaException($"Categoria não encontrada para o id: {Id}.");
+
+                return categoria;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

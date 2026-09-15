@@ -69,7 +69,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Desenvolvedora retornada com sucesso", type: typeof(DesenvolvedoraResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Desenvolvedora não encontrada")]
+        [SwaggerResponse(statusCode: 404, description: "Desenvolvedora não encontrada", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(DesenvolvedoraResponseSample))]
         public async Task<IActionResult> Get(int id)
@@ -80,13 +80,12 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var desenvolvedora = await _desenvolvedoraUseCase.ObterUmaDesenvolvedoraAsync(id);
 
-                if (desenvolvedora is null)
-                {
-                    _logger.LogWarning("Desenvolvedora {DesenvolvedoraId} não encontrada", id);
-                    return NotFound();
-                }
-
-                return Ok(desenvolvedora.ToResponseDto());
+                return Ok(desenvolvedora!.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -146,7 +145,7 @@ namespace Jogos.API.Presentation.Controllers
         )]
         [SwaggerRequestExample(typeof(DesenvolvedoraRequestDto), typeof(DesenvolvedoraRequestSample))]
         [SwaggerResponse(statusCode: 200, description: "Desenvolvedora editada com sucesso", type: typeof(DesenvolvedoraResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Desenvolvedora não encontrada")]
+        [SwaggerResponse(statusCode: 404, description: "Desenvolvedora não encontrada", type: typeof(string))]
         [SwaggerResponse(statusCode: 409, description: "Já existe uma desenvolvedora com esse nome", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar a desenvolvedora", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(DesenvolvedoraResponseSample))]
@@ -158,13 +157,12 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var desenvolvedora = await _desenvolvedoraUseCase.EditarDesenvolvedoraAsync(id, model);
 
-                if (desenvolvedora is null)
-                {
-                    _logger.LogWarning("Desenvolvedora {DesenvolvedoraId} não encontrada para edição", id);
-                    return NotFound();
-                }
-
-                return Ok(desenvolvedora.ToResponseDto());
+                return Ok(desenvolvedora!.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, ex.Message);
+                return NotFound(ex.Message);
             }
             catch (NomeDuplicadoException ex)
             {
@@ -189,7 +187,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Desenvolvedora deletada com sucesso", type: typeof(DesenvolvedoraResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Desenvolvedora não encontrada")]
+        [SwaggerResponse(statusCode: 404, description: "Desenvolvedora não encontrada", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar a desenvolvedora", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(DesenvolvedoraResponseSample))]
         public async Task<IActionResult> Delete(int id)
@@ -200,13 +198,12 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var desenvolvedora = await _desenvolvedoraUseCase.DeletarDesenvolvedoraAsync(id);
 
-                if (desenvolvedora is null)
-                {
-                    _logger.LogWarning("Desenvolvedora {DesenvolvedoraId} não encontrada para deleção", id);
-                    return NotFound();
-                }
-
-                return Ok(desenvolvedora.ToResponseDto());
+                return Ok(desenvolvedora!.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

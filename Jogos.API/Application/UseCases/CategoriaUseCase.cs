@@ -40,12 +40,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Deletando categoria {CategoriaId}", Id);
 
-                var categoria = await _categoriaRepository.DeletarAsync(Id);
-
-                if (categoria is null)
-                    _logger.LogWarning("Categoria {CategoriaId} não encontrada para deleção", Id);
-
-                return categoria;
+                return await _categoriaRepository.DeletarAsync(Id);
             }
             catch (Exception ex)
             {
@@ -60,12 +55,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Editando categoria {CategoriaId}", Id);
 
-                var categoria = await _categoriaRepository.EditarAsync(Id, entity.ToCategoriaEntity());
-
-                if (categoria is null)
-                    _logger.LogWarning("Categoria {CategoriaId} não encontrada para edição", Id);
-
-                return categoria;
+                return await _categoriaRepository.EditarAsync(Id, entity.ToCategoriaEntity());
             }
             catch (Exception ex)
             {
@@ -95,12 +85,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Obtendo categoria {CategoriaId}", Id);
 
-                var categoria = await _categoriaRepository.ObterUmAsync(Id);
-
-                if (categoria is null)
-                    _logger.LogWarning("Categoria {CategoriaId} não encontrada", Id);
-
-                return categoria;
+                return await _categoriaRepository.ObterUmAsync(Id);
             }
             catch (Exception ex)
             {

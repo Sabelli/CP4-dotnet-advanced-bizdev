@@ -40,12 +40,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Deletando desenvolvedora {DesenvolvedoraId}", Id);
 
-                var desenvolvedora = await _desenvolvedoraRepository.DeletarAsync(Id);
-
-                if (desenvolvedora is null)
-                    _logger.LogWarning("Desenvolvedora {DesenvolvedoraId} não encontrada para deleção", Id);
-
-                return desenvolvedora;
+                return await _desenvolvedoraRepository.DeletarAsync(Id);
             }
             catch (Exception ex)
             {
@@ -60,12 +55,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Editando desenvolvedora {DesenvolvedoraId}", Id);
 
-                var desenvolvedora = await _desenvolvedoraRepository.EditarAsync(Id, entity.ToDesenvolvedoraEntity());
-
-                if (desenvolvedora is null)
-                    _logger.LogWarning("Desenvolvedora {DesenvolvedoraId} não encontrada para edição", Id);
-
-                return desenvolvedora;
+                return await _desenvolvedoraRepository.EditarAsync(Id, entity.ToDesenvolvedoraEntity());
             }
             catch (Exception ex)
             {
@@ -95,12 +85,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Obtendo desenvolvedora {DesenvolvedoraId}", Id);
 
-                var desenvolvedora = await _desenvolvedoraRepository.ObterUmAsync(Id);
-
-                if (desenvolvedora is null)
-                    _logger.LogWarning("Desenvolvedora {DesenvolvedoraId} não encontrada", Id);
-
-                return desenvolvedora;
+                return await _desenvolvedoraRepository.ObterUmAsync(Id);
             }
             catch (Exception ex)
             {

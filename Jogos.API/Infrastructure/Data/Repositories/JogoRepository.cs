@@ -136,12 +136,16 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     .FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (jogo is null)
-                    return null;
+                    throw new EntidadeNaoEncontradaException($"Jogo não encontrado para o id: {Id}.");
 
                 _context.Jogo.Remove(jogo);
                 await _context.SaveChangesAsync();
 
                 return jogo;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -160,7 +164,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     .FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (jogo is null)
-                    return null;
+                    throw new EntidadeNaoEncontradaException($"Jogo não encontrado para o id: {Id}.");
 
                 var desenvolvedora = await _context.Desenvolvedora.FindAsync(entity.DesenvolvedoraId);
 
@@ -234,12 +238,21 @@ namespace Jogos.API.Infrastructure.Data.Repositories
         {
             try
             {
-                return await _context
+                var jogo = await _context
                     .Jogo
                     .Include(x => x.Desenvolvedora)
                     .Include(x => x.Categorias)
                     .Include(x => x.Plataformas)
                     .FirstOrDefaultAsync(x => x.Id == Id);
+
+                if (jogo is null)
+                    throw new EntidadeNaoEncontradaException($"Jogo não encontrado para o id: {Id}.");
+
+                return jogo;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -421,7 +434,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     .FirstOrDefaultAsync(x => x.Id == idJogo);
 
                 if (jogo is null)
-                    return null;
+                    throw new EntidadeNaoEncontradaException($"Jogo não encontrado para o id: {idJogo}.");
 
                 var categorias = await ResolverCategoriasOuFalharAsync(_context.Categoria, categoriaIds);
 
@@ -456,7 +469,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     .FirstOrDefaultAsync(x => x.Id == idJogo);
 
                 if (jogo is null)
-                    return null;
+                    throw new EntidadeNaoEncontradaException($"Jogo não encontrado para o id: {idJogo}.");
 
                 foreach (var idCategoria in categoriaIds)
                 {
@@ -469,6 +482,10 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 await _context.SaveChangesAsync();
 
                 return jogo;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -487,7 +504,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     .FirstOrDefaultAsync(x => x.Id == idJogo);
 
                 if (jogo is null)
-                    return null;
+                    throw new EntidadeNaoEncontradaException($"Jogo não encontrado para o id: {idJogo}.");
 
                 var plataformas = await ResolverPlataformasOuFalharAsync(_context.Plataforma, plataformaIds);
 
@@ -522,7 +539,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                     .FirstOrDefaultAsync(x => x.Id == idJogo);
 
                 if (jogo is null)
-                    return null;
+                    throw new EntidadeNaoEncontradaException($"Jogo não encontrado para o id: {idJogo}.");
 
                 foreach (var idPlataforma in plataformaIds)
                 {
@@ -535,6 +552,10 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 await _context.SaveChangesAsync();
 
                 return jogo;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

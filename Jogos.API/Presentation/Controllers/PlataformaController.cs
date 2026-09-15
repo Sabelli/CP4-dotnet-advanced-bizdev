@@ -69,7 +69,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Plataforma retornada com sucesso", type: typeof(PlataformaResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Plataforma não encontrada")]
+        [SwaggerResponse(statusCode: 404, description: "Plataforma não encontrada", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(PlataformaResponseSample))]
         public async Task<IActionResult> Get(int id)
@@ -80,13 +80,12 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var plataforma = await _plataformaUseCase.ObterUmaPlataformaAsync(id);
 
-                if (plataforma is null)
-                {
-                    _logger.LogWarning("Plataforma {PlataformaId} não encontrada", id);
-                    return NotFound();
-                }
-
-                return Ok(plataforma.ToResponseDto());
+                return Ok(plataforma!.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -146,7 +145,7 @@ namespace Jogos.API.Presentation.Controllers
         )]
         [SwaggerRequestExample(typeof(PlataformaRequestDto), typeof(PlataformaRequestSample))]
         [SwaggerResponse(statusCode: 200, description: "Plataforma editada com sucesso", type: typeof(PlataformaResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Plataforma não encontrada")]
+        [SwaggerResponse(statusCode: 404, description: "Plataforma não encontrada", type: typeof(string))]
         [SwaggerResponse(statusCode: 409, description: "Já existe uma plataforma com esse nome", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar a plataforma", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(PlataformaResponseSample))]
@@ -158,13 +157,12 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var plataforma = await _plataformaUseCase.EditarPlataformaAsync(id, model);
 
-                if (plataforma is null)
-                {
-                    _logger.LogWarning("Plataforma {PlataformaId} não encontrada para edição", id);
-                    return NotFound();
-                }
-
-                return Ok(plataforma.ToResponseDto());
+                return Ok(plataforma!.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, ex.Message);
+                return NotFound(ex.Message);
             }
             catch (NomeDuplicadoException ex)
             {
@@ -189,7 +187,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Plataforma deletada com sucesso", type: typeof(PlataformaResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Plataforma não encontrada")]
+        [SwaggerResponse(statusCode: 404, description: "Plataforma não encontrada", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar a plataforma", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(PlataformaResponseSample))]
         public async Task<IActionResult> Delete(int id)
@@ -200,13 +198,12 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var plataforma = await _plataformaUseCase.DeletarPlataformaAsync(id);
 
-                if (plataforma is null)
-                {
-                    _logger.LogWarning("Plataforma {PlataformaId} não encontrada para deleção", id);
-                    return NotFound();
-                }
-
-                return Ok(plataforma.ToResponseDto());
+                return Ok(plataforma!.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

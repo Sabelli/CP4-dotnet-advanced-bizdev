@@ -42,12 +42,16 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 var plataforma = await _context.Plataforma.FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (plataforma is null)
-                    return null;
+                    throw new EntidadeNaoEncontradaException($"Plataforma não encontrada para o id: {Id}.");
 
                 _context.Plataforma.Remove(plataforma);
                 await _context.SaveChangesAsync();
 
                 return plataforma;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -62,7 +66,7 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 var plataforma = await _context.Plataforma.FirstOrDefaultAsync(x => x.Id == Id);
 
                 if (plataforma is null)
-                    return null;
+                    throw new EntidadeNaoEncontradaException($"Plataforma não encontrada para o id: {Id}.");
 
                 var existe = await _context.Plataforma.CountAsync(x => x.Nome.ToUpper() == entity.Nome.ToUpper() && x.Id != Id) > 0;
 
@@ -75,6 +79,10 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 await _context.SaveChangesAsync();
 
                 return plataforma;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (NomeDuplicadoException)
             {
@@ -120,9 +128,18 @@ namespace Jogos.API.Infrastructure.Data.Repositories
         {
             try
             {
-                return await _context
+                var plataforma = await _context
                     .Plataforma
                     .FirstOrDefaultAsync(x => x.Id == Id);
+
+                if (plataforma is null)
+                    throw new EntidadeNaoEncontradaException($"Plataforma não encontrada para o id: {Id}.");
+
+                return plataforma;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

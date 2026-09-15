@@ -40,12 +40,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Deletando plataforma {PlataformaId}", Id);
 
-                var plataforma = await _plataformaRepository.DeletarAsync(Id);
-
-                if (plataforma is null)
-                    _logger.LogWarning("Plataforma {PlataformaId} não encontrada para deleção", Id);
-
-                return plataforma;
+                return await _plataformaRepository.DeletarAsync(Id);
             }
             catch (Exception ex)
             {
@@ -60,12 +55,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Editando plataforma {PlataformaId}", Id);
 
-                var plataforma = await _plataformaRepository.EditarAsync(Id, entity.ToPlataformaEntity());
-
-                if (plataforma is null)
-                    _logger.LogWarning("Plataforma {PlataformaId} não encontrada para edição", Id);
-
-                return plataforma;
+                return await _plataformaRepository.EditarAsync(Id, entity.ToPlataformaEntity());
             }
             catch (Exception ex)
             {
@@ -95,12 +85,7 @@ namespace Jogos.API.Application.UseCases
             {
                 _logger.LogInformation("Obtendo plataforma {PlataformaId}", Id);
 
-                var plataforma = await _plataformaRepository.ObterUmAsync(Id);
-
-                if (plataforma is null)
-                    _logger.LogWarning("Plataforma {PlataformaId} não encontrada", Id);
-
-                return plataforma;
+                return await _plataformaRepository.ObterUmAsync(Id);
             }
             catch (Exception ex)
             {

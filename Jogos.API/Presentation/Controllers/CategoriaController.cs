@@ -69,7 +69,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Categoria retornada com sucesso", type: typeof(CategoriaResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada")]
+        [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(CategoriaResponseSample))]
         public async Task<IActionResult> Get(int id)
@@ -80,13 +80,12 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var categoria = await _categoriaUseCase.ObterUmaCategoriaAsync(id);
 
-                if (categoria is null)
-                {
-                    _logger.LogWarning("Categoria {CategoriaId} não encontrada", id);
-                    return NotFound();
-                }
-
-                return Ok(categoria.ToResponseDto());
+                return Ok(categoria!.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -146,7 +145,7 @@ namespace Jogos.API.Presentation.Controllers
         )]
         [SwaggerRequestExample(typeof(CategoriaRequestDto), typeof(CategoriaRequestSample))]
         [SwaggerResponse(statusCode: 200, description: "Categoria editada com sucesso", type: typeof(CategoriaResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada")]
+        [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada", type: typeof(string))]
         [SwaggerResponse(statusCode: 409, description: "Já existe uma categoria com esse nome", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar a categoria", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(CategoriaResponseSample))]
@@ -158,13 +157,12 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var categoria = await _categoriaUseCase.EditarCategoriaAsync(id, model);
 
-                if (categoria is null)
-                {
-                    _logger.LogWarning("Categoria {CategoriaId} não encontrada para edição", id);
-                    return NotFound();
-                }
-
-                return Ok(categoria.ToResponseDto());
+                return Ok(categoria!.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, ex.Message);
+                return NotFound(ex.Message);
             }
             catch (NomeDuplicadoException ex)
             {
@@ -189,7 +187,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Categoria deletada com sucesso", type: typeof(CategoriaResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada")]
+        [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar a categoria", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(CategoriaResponseSample))]
         public async Task<IActionResult> Delete(int id)
@@ -200,13 +198,12 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var categoria = await _categoriaUseCase.DeletarCategoriaAsync(id);
 
-                if (categoria is null)
-                {
-                    _logger.LogWarning("Categoria {CategoriaId} não encontrada para deleção", id);
-                    return NotFound();
-                }
-
-                return Ok(categoria.ToResponseDto());
+                return Ok(categoria!.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

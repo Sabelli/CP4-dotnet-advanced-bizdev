@@ -75,7 +75,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Jogo retornado com sucesso", type: typeof(JogoResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado")]
+        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(JogoCreatedSample))]
         public async Task<IActionResult> Get(int id)
@@ -86,13 +86,12 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var jogo = await _jogoUseCase.ObterUmJogoAsync(id);
 
-                if (jogo is null)
-                {
-                    _logger.LogWarning("Jogo {JogoId} não encontrado", id);
-                    return NotFound();
-                }
-
-                return Ok(jogo.ToResponseDto());
+                return Ok(jogo!.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -337,7 +336,7 @@ namespace Jogos.API.Presentation.Controllers
         )]
         [SwaggerRequestExample(typeof(JogoUpdateRequestDto), typeof(JogoUpdateSample))]
         [SwaggerResponse(statusCode: 200, description: "Jogo editado com sucesso", type: typeof(JogoResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Jogo ou desenvolvedora não encontrado")]
+        [SwaggerResponse(statusCode: 404, description: "Jogo ou desenvolvedora não encontrado", type: typeof(string))]
         [SwaggerResponse(statusCode: 409, description: "Já existe um jogo com esse nome", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar o jogo", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(JogoCreatedSample))]
@@ -349,17 +348,11 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var jogo = await _jogoUseCase.EditarJogoAsync(id, model);
 
-                if (jogo is null)
-                {
-                    _logger.LogWarning("Jogo {JogoId} não encontrado para edição", id);
-                    return NotFound();
-                }
-
-                return Ok(jogo.ToResponseDto());
+                return Ok(jogo!.ToResponseDto());
             }
             catch (EntidadeNaoEncontradaException ex)
             {
-                _logger.LogWarning(ex, "Desenvolvedora não encontrada para o id: {DesenvolvedoraId}.", model.DesenvolvedoraId);
+                _logger.LogWarning(ex, ex.Message);
                 return NotFound(ex.Message);
             }
             catch (NomeDuplicadoException ex)
@@ -385,7 +378,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Jogo deletado com sucesso", type: typeof(JogoResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado")]
+        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar o jogo", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(JogoCreatedSample))]
         public async Task<IActionResult> Delete(int id)
@@ -396,13 +389,12 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var jogo = await _jogoUseCase.DeletarJogoAsync(id);
 
-                if (jogo is null)
-                {
-                    _logger.LogWarning("Jogo {JogoId} não encontrado para deleção", id);
-                    return NotFound();
-                }
-
-                return Ok(jogo.ToResponseDto());
+                return Ok(jogo!.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -426,7 +418,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Categorias vinculadas com sucesso", type: typeof(JogoResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado, ou algum id de categoria não existe")]
+        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado, ou algum id de categoria não existe", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao vincular as categorias", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(JogoCreatedSample))]
         public async Task<IActionResult> PostCategoriaJogo(int idJogo, [FromBody] IEnumerable<int> categoriaIds)
@@ -437,17 +429,11 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var jogo = await _jogoUseCase.VincularCategoriaAsync(idJogo, categoriaIds);
 
-                if (jogo is null)
-                {
-                    _logger.LogWarning("Jogo {JogoId} não encontrado para vínculo", idJogo);
-                    return NotFound();
-                }
-
-                return Ok(jogo.ToResponseDto());
+                return Ok(jogo!.ToResponseDto());
             }
             catch (EntidadeNaoEncontradaException ex)
             {
-                _logger.LogWarning(ex, "Categoria não encontrada ao vincular ao jogo {JogoId}", idJogo);
+                _logger.LogWarning(ex, ex.Message);
                 return NotFound(ex.Message);
             }
             catch (Exception ex)
@@ -471,7 +457,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Categorias desvinculadas com sucesso", type: typeof(JogoResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado")]
+        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao desvincular as categorias", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(JogoCreatedSample))]
         public async Task<IActionResult> DeleteCategoriaJogo(int idJogo, [FromBody] IEnumerable<int> categoriaIds)
@@ -482,13 +468,12 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var jogo = await _jogoUseCase.DesvincularCategoriaAsync(idJogo, categoriaIds);
 
-                if (jogo is null)
-                {
-                    _logger.LogWarning("Jogo {JogoId} não encontrado para desvínculo", idJogo);
-                    return NotFound();
-                }
-
-                return Ok(jogo.ToResponseDto());
+                return Ok(jogo!.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -512,7 +497,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Plataformas vinculadas com sucesso", type: typeof(JogoResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado, ou algum id de plataforma não existe")]
+        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado, ou algum id de plataforma não existe", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao vincular as plataformas", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(JogoCreatedSample))]
         public async Task<IActionResult> PostPlataformaJogo(int idJogo, [FromBody] IEnumerable<int> plataformaIds)
@@ -523,17 +508,11 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var jogo = await _jogoUseCase.VincularPlataformaAsync(idJogo, plataformaIds);
 
-                if (jogo is null)
-                {
-                    _logger.LogWarning("Jogo {JogoId} não encontrado para vínculo", idJogo);
-                    return NotFound();
-                }
-
-                return Ok(jogo.ToResponseDto());
+                return Ok(jogo!.ToResponseDto());
             }
             catch (EntidadeNaoEncontradaException ex)
             {
-                _logger.LogWarning(ex, "Plataforma não encontrada ao vincular ao jogo {JogoId}", idJogo);
+                _logger.LogWarning(ex, ex.Message);
                 return NotFound(ex.Message);
             }
             catch (Exception ex)
@@ -557,7 +536,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerResponse(statusCode: 200, description: "Plataformas desvinculadas com sucesso", type: typeof(JogoResponseDto))]
-        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado")]
+        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao desvincular as plataformas", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(JogoCreatedSample))]
         public async Task<IActionResult> DeletePlataformaJogo(int idJogo, [FromBody] IEnumerable<int> plataformaIds)
@@ -568,13 +547,12 @@ namespace Jogos.API.Presentation.Controllers
             {
                 var jogo = await _jogoUseCase.DesvincularPlataformaAsync(idJogo, plataformaIds);
 
-                if (jogo is null)
-                {
-                    _logger.LogWarning("Jogo {JogoId} não encontrado para desvínculo", idJogo);
-                    return NotFound();
-                }
-
-                return Ok(jogo.ToResponseDto());
+                return Ok(jogo!.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, ex.Message);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
