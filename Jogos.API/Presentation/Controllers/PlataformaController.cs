@@ -140,6 +140,7 @@ namespace Jogos.API.Presentation.Controllers
             ## Informações do Retorno:
             * **Status 200 (OK):** Plataforma editada com sucesso.
             * **Status 404 (Not Found):** Não foi encontrada plataforma com o id informado.
+            * **Status 409 (Conflict):** Já existe uma plataforma com esse nome.
             * **Status 400 (Bad Request):** Ocorreu uma falha ao editar a plataforma.
             """
         )]

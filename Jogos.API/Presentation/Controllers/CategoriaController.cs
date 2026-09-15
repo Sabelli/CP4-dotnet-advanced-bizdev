@@ -140,6 +140,7 @@ namespace Jogos.API.Presentation.Controllers
             ## Informações do Retorno:
             * **Status 200 (OK):** Categoria editada com sucesso.
             * **Status 404 (Not Found):** Não foi encontrada categoria com o id informado.
+            * **Status 409 (Conflict):** Já existe uma categoria com esse nome.
             * **Status 400 (Bad Request):** Ocorreu uma falha ao editar a categoria.
             """
         )]
