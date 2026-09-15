@@ -43,6 +43,34 @@ namespace Jogos.API.Infrastructure.Data.Repositories
             return resolvidas;
         }
 
+        private static async Task<(List<CategoriaEntity> Resolvidas, string? Erro)> ValidarCategoriasAsync(DbSet<CategoriaEntity> dbSet, IEnumerable<int> ids)
+        {
+            var idsList = ids.Distinct().ToList();
+            var resolvidas = await dbSet.Where(x => idsList.Contains(x.Id)).ToListAsync();
+
+            if (resolvidas.Count != idsList.Count)
+            {
+                var faltantes = idsList.Except(resolvidas.Select(x => x.Id));
+                return (resolvidas, $"Categoria(s) não encontrada(s) para o(s) id(s): {string.Join(", ", faltantes)}.");
+            }
+
+            return (resolvidas, null);
+        }
+
+        private static async Task<(List<PlataformaEntity> Resolvidas, string? Erro)> ValidarPlataformasAsync(DbSet<PlataformaEntity> dbSet, IEnumerable<int> ids)
+        {
+            var idsList = ids.Distinct().ToList();
+            var resolvidas = await dbSet.Where(x => idsList.Contains(x.Id)).ToListAsync();
+
+            if (resolvidas.Count != idsList.Count)
+            {
+                var faltantes = idsList.Except(resolvidas.Select(x => x.Id));
+                return (resolvidas, $"Plataforma(s) não encontrada(s) para o(s) id(s): {string.Join(", ", faltantes)}.");
+            }
+
+            return (resolvidas, null);
+        }
+
         public async Task<JogoEntity?> AdicionarAsync(JogoEntity entity, IEnumerable<int>? categoriaIds, IEnumerable<int>? plataformaIds)
         {
             try
@@ -52,18 +80,35 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 if (existe)
                     return null;
 
+                var erros = new List<string>();
+
                 var desenvolvedora = await _context.Desenvolvedora.FindAsync(entity.DesenvolvedoraId);
 
                 if (desenvolvedora is null)
-                    throw new EntidadeNaoEncontradaException($"Desenvolvedora não encontrada para o id: {entity.DesenvolvedoraId}.");
+                    erros.Add($"Desenvolvedora não encontrada para o id: {entity.DesenvolvedoraId}.");
 
-                entity.Desenvolvedora = desenvolvedora;
+                List<CategoriaEntity>? categorias = null;
 
                 if (categoriaIds is not null && categoriaIds.Any())
-                    entity.Categorias = await ResolverCategoriasOuFalharAsync(_context.Categoria, categoriaIds);
+                {
+                    var (resolvidas, erro) = await ValidarCategoriasAsync(_context.Categoria, categoriaIds);
+                    if (erro is not null) erros.Add(erro); else categorias = resolvidas;
+                }
+
+                List<PlataformaEntity>? plataformas = null;
 
                 if (plataformaIds is not null && plataformaIds.Any())
-                    entity.Plataformas = await ResolverPlataformasOuFalharAsync(_context.Plataforma, plataformaIds);
+                {
+                    var (resolvidas, erro) = await ValidarPlataformasAsync(_context.Plataforma, plataformaIds);
+                    if (erro is not null) erros.Add(erro); else plataformas = resolvidas;
+                }
+
+                if (erros.Count > 0)
+                    throw new EntidadeNaoEncontradaException(string.Join(" ", erros));
+
+                entity.Desenvolvedora = desenvolvedora;
+                if (categorias is not null) entity.Categorias = categorias;
+                if (plataformas is not null) entity.Plataformas = plataformas;
 
                 _context.Jogo.Add(entity);
                 await _context.SaveChangesAsync();
