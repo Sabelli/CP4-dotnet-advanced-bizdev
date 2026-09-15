@@ -16,6 +16,7 @@ namespace Jogos.API.Domain.Entities
         [Column("c_nome")]
         public string Nome { get; set; }
 
+        [Range(0, double.MaxValue, ErrorMessage = "O preço do jogo não pode ser negativo")]
         [Column("c_preco")]
         public double Preco { get; set; }
 
