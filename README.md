@@ -1,4 +1,4 @@
-# Jogos API — .NET
+# maetS API — .NET
 
 API RESTful desenvolvida em **ASP.NET Core** para o gerenciamento de um catálogo de jogos, como Checkpoint 4 (CP4) da disciplina **Advanced Business Development with .NET**.
 
@@ -191,7 +191,7 @@ A resposta (`200 OK`) vem em um envelope com metadados de paginação (`PageResu
 {
   "data": [ { "id": 1, "nome": "The Witcher 3" } ],
   "deslocamento": 0,
-  "registroRetornado": 10,
+  "registroRetornado": 50,
   "totalRegistros": 1
 }
 ```
@@ -201,6 +201,8 @@ Ordenação por `Id` ascendente.
 ### Rate Limiting
 
 Fixed window (`politica_5_tentativas`), aplicada em todo GET de listagem/filtro: **5 requisições a cada 20 segundos**, fila de 2. Ao exceder: **429 Too Many Requests**.
+
+Desabilitado no ambiente `Testing` (`Program.cs`, guardado por `IsEnvironment("Testing")`) para a suíte de testes não compartilhar o mesmo bucket entre os métodos de uma mesma classe de teste.
 
 ### Compressão de Resposta
 
@@ -241,11 +243,11 @@ Telemetria via OpenTelemetry + Azure Monitor. Connection string em `ApplicationI
 
 | Método | Rota | Descrição | Retorno |
 |--------|------|-----------|---------|
-| GET | `/api/categoria` | Lista categorias (paginado) | 200 / 204 |
-| GET | `/api/categoria/{id}` | Busca categoria por id | 200 / 404 |
+| GET | `/api/categoria` | Lista categorias (paginado) | 200 / 204 / 400 |
+| GET | `/api/categoria/{id}` | Busca categoria por id | 200 / 404 / 400 |
 | POST | `/api/categoria` | Cria categoria | 201 / 409 / 400 |
 | PUT | `/api/categoria/{id}` | Atualiza categoria | 200 / 404 / 409 / 400 |
-| DELETE | `/api/categoria/{id}` | Remove categoria | 200 / 404 |
+| DELETE | `/api/categoria/{id}` | Remove categoria | 200 / 404 / 400 |
 
 **POST / PUT — Body:**
 ```json
@@ -258,11 +260,11 @@ Telemetria via OpenTelemetry + Azure Monitor. Connection string em `ApplicationI
 
 | Método | Rota | Descrição | Retorno |
 |--------|------|-----------|---------|
-| GET | `/api/desenvolvedora` | Lista desenvolvedoras (paginado) | 200 / 204 |
-| GET | `/api/desenvolvedora/{id}` | Busca desenvolvedora por id | 200 / 404 |
+| GET | `/api/desenvolvedora` | Lista desenvolvedoras (paginado) | 200 / 204 / 400 |
+| GET | `/api/desenvolvedora/{id}` | Busca desenvolvedora por id | 200 / 404 / 400 |
 | POST | `/api/desenvolvedora` | Cria desenvolvedora | 201 / 409 / 400 |
 | PUT | `/api/desenvolvedora/{id}` | Atualiza desenvolvedora | 200 / 404 / 409 / 400 |
-| DELETE | `/api/desenvolvedora/{id}` | Remove desenvolvedora | 200 / 404 |
+| DELETE | `/api/desenvolvedora/{id}` | Remove desenvolvedora | 200 / 404 / 400 |
 
 **POST / PUT — Body:**
 ```json
@@ -275,11 +277,11 @@ Telemetria via OpenTelemetry + Azure Monitor. Connection string em `ApplicationI
 
 | Método | Rota | Descrição | Retorno |
 |--------|------|-----------|---------|
-| GET | `/api/plataforma` | Lista plataformas (paginado) | 200 / 204 |
-| GET | `/api/plataforma/{id}` | Busca plataforma por id | 200 / 404 |
+| GET | `/api/plataforma` | Lista plataformas (paginado) | 200 / 204 / 400 |
+| GET | `/api/plataforma/{id}` | Busca plataforma por id | 200 / 404 / 400 |
 | POST | `/api/plataforma` | Cria plataforma | 201 / 409 / 400 |
 | PUT | `/api/plataforma/{id}` | Atualiza plataforma | 200 / 404 / 409 / 400 |
-| DELETE | `/api/plataforma/{id}` | Remove plataforma | 200 / 404 |
+| DELETE | `/api/plataforma/{id}` | Remove plataforma | 200 / 404 / 400 |
 
 **POST / PUT — Body:**
 ```json
@@ -293,19 +295,19 @@ Telemetria via OpenTelemetry + Azure Monitor. Connection string em `ApplicationI
 
 | Método | Rota | Descrição | Retorno |
 |--------|------|-----------|---------|
-| GET | `/api/jogo` | Lista jogos (paginado) | 200 / 204 |
-| GET | `/api/jogo/{id}` | Busca jogo por id | 200 / 404 |
-| GET | `/api/jogo/nome/{nome}` | Busca jogos por nome (parcial) | 200 / 204 |
-| GET | `/api/jogo/plataforma/{idPlataforma}` | Lista jogos por plataforma | 200 / 204 / 404 |
-| GET | `/api/jogo/desenvolvedora/{idDesenvolvedora}` | Lista jogos por desenvolvedora | 200 / 204 / 404 |
-| GET | `/api/jogo/categoria/{idCategoria}` | Lista jogos por categoria | 200 / 204 / 404 |
+| GET | `/api/jogo` | Lista jogos (paginado) | 200 / 204 / 400 |
+| GET | `/api/jogo/{id}` | Busca jogo por id | 200 / 404 / 400 |
+| GET | `/api/jogo/nome/{nome}` | Busca jogos por nome (parcial) | 200 / 204 / 400 |
+| GET | `/api/jogo/plataforma/{idPlataforma}` | Lista jogos por plataforma | 200 / 204 / 404 / 400 |
+| GET | `/api/jogo/desenvolvedora/{idDesenvolvedora}` | Lista jogos por desenvolvedora | 200 / 204 / 404 / 400 |
+| GET | `/api/jogo/categoria/{idCategoria}` | Lista jogos por categoria | 200 / 204 / 404 / 400 |
 | POST | `/api/jogo` | Cria jogo | 201 / 404 / 409 / 400 |
 | PUT | `/api/jogo/{id}` | Atualiza jogo | 200 / 404 / 409 / 400 |
-| DELETE | `/api/jogo/{id}` | Remove jogo | 200 / 404 |
+| DELETE | `/api/jogo/{id}` | Remove jogo | 200 / 404 / 400 |
 | POST | `/api/jogo/categoria/{idJogo}` | Vincula categorias existentes (lote) | 200 / 404 / 400 |
-| DELETE | `/api/jogo/categoria/{idJogo}` | Desvincula categorias (lote) | 200 / 404 |
+| DELETE | `/api/jogo/categoria/{idJogo}` | Desvincula categorias (lote) | 200 / 404 / 400 |
 | POST | `/api/jogo/plataforma/{idJogo}` | Vincula plataformas existentes (lote) | 200 / 404 / 400 |
-| DELETE | `/api/jogo/plataforma/{idJogo}` | Desvincula plataformas (lote) | 200 / 404 |
+| DELETE | `/api/jogo/plataforma/{idJogo}` | Desvincula plataformas (lote) | 200 / 404 / 400 |
 
 > As listagens/filtros aceitam `?Deslocamento=&RegistroRetornado=` — ver [Comportamentos Transversais](#comportamentos-transversais).
 > Filtros por `plataforma`/`desenvolvedora`/`categoria` retornam `404` se o id não existir, e `204` se existir mas não tiver jogos vinculados.
@@ -389,7 +391,7 @@ Além dos prints por endpoint, também há evidências de execução da suíte d
 
 ## Observações
 
-- `Categoria.Jogos` e `Desenvolvedora.Jogos` (navegação reversa) usam `[JsonIgnore]` — não aparecem nas respostas. Isso evita ciclo de serialização JSON (EF Core faz fixup automático das navegações quando entidades compartilhadas ficam trackadas no mesmo `DbContext`). Só `Jogo` expõe suas relações (`Desenvolvedora`, `Categorias`, `Plataformas`).
+- Só `Jogo` expõe suas relações (`Desenvolvedora`, `Categorias`, `Plataformas`).
 - Checagem de duplicata por `Nome` é case-insensitive na aplicação (Categoria, Desenvolvedora, Plataforma e Jogo), além do índice único no banco — aplicada tanto no `POST` (nome já existente) quanto no `PUT` (renomear pra um nome que já existe em outro registro), ambos retornando `409` com mensagem clara.
 - Todo endpoint que retorna um `Jogo` (`GET`, `POST`, `PUT`, `DELETE` e vínculo/desvínculo de categoria/plataforma) traz `desenvolvedora`, `categorias` e `plataformas` preenchidos, não só a relação que o endpoint alterou.
 - Todas as respostas (`GET`, `POST`, `PUT`, `DELETE`) usam DTOs de resposta dedicados (`JogoResponseDto`, `CategoriaResponseDto`, `DesenvolvedoraResponseDto`, `PlataformaResponseDto`) em vez da entidade EF crua.
