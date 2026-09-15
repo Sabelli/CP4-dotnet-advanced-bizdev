@@ -52,6 +52,13 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 if (existe)
                     return null;
 
+                var desenvolvedora = await _context.Desenvolvedora.FindAsync(entity.DesenvolvedoraId);
+
+                if (desenvolvedora is null)
+                    throw new EntidadeNaoEncontradaException($"Desenvolvedora não encontrada para o id: {entity.DesenvolvedoraId}.");
+
+                entity.Desenvolvedora = desenvolvedora;
+
                 if (categoriaIds is not null && categoriaIds.Any())
                     entity.Categorias = await ResolverCategoriasOuFalharAsync(_context.Categoria, categoriaIds);
 
@@ -110,15 +117,25 @@ namespace Jogos.API.Infrastructure.Data.Repositories
                 if (jogo is null)
                     return null;
 
+                var desenvolvedora = await _context.Desenvolvedora.FindAsync(entity.DesenvolvedoraId);
+
+                if (desenvolvedora is null)
+                    throw new EntidadeNaoEncontradaException($"Desenvolvedora não encontrada para o id: {entity.DesenvolvedoraId}.");
+
                 jogo.Nome = entity.Nome;
                 jogo.Preco = entity.Preco;
                 jogo.DataLancamento = entity.DataLancamento;
                 jogo.DesenvolvedoraId = entity.DesenvolvedoraId;
+                jogo.Desenvolvedora = desenvolvedora;
 
                 _context.Jogo.Update(jogo);
                 await _context.SaveChangesAsync();
 
                 return jogo;
+            }
+            catch (EntidadeNaoEncontradaException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

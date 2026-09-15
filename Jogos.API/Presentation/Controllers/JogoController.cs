@@ -1,5 +1,6 @@
 using Jogos.API.Application.Dtos;
 using Jogos.API.Application.Interfaces;
+using Jogos.API.Application.Mappers;
 using Jogos.API.Doc.Samples;
 using Jogos.API.Domain.Entities;
 using Jogos.API.Domain.Exceptions;
@@ -288,8 +289,9 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerRequestExample(typeof(JogoRequestDto), typeof(JogoRequestSample))]
-        [SwaggerResponse(statusCode: 201, description: "Jogo criado com sucesso", type: typeof(JogoEntity))]
+        [SwaggerResponse(statusCode: 201, description: "Jogo criado com sucesso", type: typeof(JogoResponseDto))]
         [SwaggerResponse(statusCode: 409, description: "Já existe um jogo com esse nome", type: typeof(string))]
+        [SwaggerResponse(statusCode: 404, description: "Desenvolvedora não encontrada")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar o jogo", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 201, typeof(JogoCreatedSample))]
         public async Task<IActionResult> Post(JogoRequestDto model)
@@ -306,7 +308,12 @@ namespace Jogos.API.Presentation.Controllers
                     return Conflict($"Já existe um jogo com o nome '{model.Nome}'.");
                 }
 
-                return CreatedAtAction(nameof(Get), new { id = jogo.Id }, jogo);
+                return CreatedAtAction(nameof(Get), new { id = jogo.Id }, jogo.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, "Desenvolvedora não encontrada para o id: {DesenvolvedoraId}.", model.DesenvolvedoraId);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -329,10 +336,10 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerRequestExample(typeof(JogoUpdateRequestDto), typeof(JogoUpdateSample))]
-        [SwaggerResponse(statusCode: 200, description: "Jogo editado com sucesso", type: typeof(JogoEntity))]
-        [SwaggerResponse(statusCode: 404, description: "Jogo não encontrado")]
+        [SwaggerResponse(statusCode: 200, description: "Jogo editado com sucesso", type: typeof(JogoResponseDto))]
+        [SwaggerResponse(statusCode: 404, description: "Jogo ou desenvolvedora não encontrado")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar o jogo", type: typeof(string))]
-        [SwaggerResponseExample(statusCode: 200, typeof(JogoResponseSample))]
+        [SwaggerResponseExample(statusCode: 200, typeof(JogoCreatedSample))]
         public async Task<IActionResult> Put(int id, JogoUpdateRequestDto model)
         {
             _logger.LogInformation("Editando jogo {JogoId}", id);
@@ -347,7 +354,12 @@ namespace Jogos.API.Presentation.Controllers
                     return NotFound();
                 }
 
-                return Ok(jogo);
+                return Ok(jogo.ToResponseDto());
+            }
+            catch (EntidadeNaoEncontradaException ex)
+            {
+                _logger.LogWarning(ex, "Desenvolvedora não encontrada para o id: {DesenvolvedoraId}.", model.DesenvolvedoraId);
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
