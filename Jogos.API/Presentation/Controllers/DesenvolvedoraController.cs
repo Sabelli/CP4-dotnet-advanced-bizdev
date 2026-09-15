@@ -1,7 +1,7 @@
 using Jogos.API.Application.Dtos;
 using Jogos.API.Application.Interfaces;
+using Jogos.API.Application.Mappers;
 using Jogos.API.Doc.Samples;
-using Jogos.API.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Swashbuckle.AspNetCore.Annotations;
@@ -32,7 +32,7 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<DesenvolvedoraEntity>))]
+        [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<DesenvolvedoraResponseDto>))]
         [SwaggerResponse(statusCode: 204, description: "Nenhuma desenvolvedora encontrada")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(DesenvolvedoraResponseListSample))]
@@ -48,7 +48,7 @@ namespace Jogos.API.Presentation.Controllers
                 if (!resultado.Data.Any())
                     return NoContent();
 
-                return Ok(resultado);
+                return Ok(resultado.ToResponseDto());
             }
             catch (Exception ex)
             {
@@ -67,7 +67,7 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Desenvolvedora retornada com sucesso", type: typeof(DesenvolvedoraEntity))]
+        [SwaggerResponse(statusCode: 200, description: "Desenvolvedora retornada com sucesso", type: typeof(DesenvolvedoraResponseDto))]
         [SwaggerResponse(statusCode: 404, description: "Desenvolvedora não encontrada")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(DesenvolvedoraResponseSample))]
@@ -85,7 +85,7 @@ namespace Jogos.API.Presentation.Controllers
                     return NotFound();
                 }
 
-                return Ok(desenvolvedora);
+                return Ok(desenvolvedora.ToResponseDto());
             }
             catch (Exception ex)
             {
@@ -105,7 +105,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerRequestExample(typeof(DesenvolvedoraRequestDto), typeof(DesenvolvedoraRequestSample))]
-        [SwaggerResponse(statusCode: 201, description: "Desenvolvedora criada com sucesso", type: typeof(DesenvolvedoraEntity))]
+        [SwaggerResponse(statusCode: 201, description: "Desenvolvedora criada com sucesso", type: typeof(DesenvolvedoraResponseDto))]
         [SwaggerResponse(statusCode: 409, description: "Já existe uma desenvolvedora com esse nome", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar a desenvolvedora", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 201, typeof(DesenvolvedoraCreatedSample))]
@@ -123,7 +123,7 @@ namespace Jogos.API.Presentation.Controllers
                     return Conflict($"Já existe uma desenvolvedora com o nome '{model.Nome}'.");
                 }
 
-                return CreatedAtAction(nameof(Get), new { id = desenvolvedora.Id }, desenvolvedora);
+                return CreatedAtAction(nameof(Get), new { id = desenvolvedora.Id }, desenvolvedora.ToResponseDto());
             }
             catch (Exception ex)
             {
@@ -143,7 +143,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerRequestExample(typeof(DesenvolvedoraRequestDto), typeof(DesenvolvedoraRequestSample))]
-        [SwaggerResponse(statusCode: 200, description: "Desenvolvedora editada com sucesso", type: typeof(DesenvolvedoraEntity))]
+        [SwaggerResponse(statusCode: 200, description: "Desenvolvedora editada com sucesso", type: typeof(DesenvolvedoraResponseDto))]
         [SwaggerResponse(statusCode: 404, description: "Desenvolvedora não encontrada")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar a desenvolvedora", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(DesenvolvedoraResponseSample))]
@@ -161,7 +161,7 @@ namespace Jogos.API.Presentation.Controllers
                     return NotFound();
                 }
 
-                return Ok(desenvolvedora);
+                return Ok(desenvolvedora.ToResponseDto());
             }
             catch (Exception ex)
             {
@@ -180,7 +180,7 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha ao deletar a desenvolvedora.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Desenvolvedora deletada com sucesso", type: typeof(DesenvolvedoraEntity))]
+        [SwaggerResponse(statusCode: 200, description: "Desenvolvedora deletada com sucesso", type: typeof(DesenvolvedoraResponseDto))]
         [SwaggerResponse(statusCode: 404, description: "Desenvolvedora não encontrada")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar a desenvolvedora", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(DesenvolvedoraResponseSample))]
@@ -198,7 +198,7 @@ namespace Jogos.API.Presentation.Controllers
                     return NotFound();
                 }
 
-                return Ok(desenvolvedora);
+                return Ok(desenvolvedora.ToResponseDto());
             }
             catch (Exception ex)
             {

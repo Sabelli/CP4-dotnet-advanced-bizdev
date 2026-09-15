@@ -1,13 +1,13 @@
-using Jogos.API.Domain.Entities;
+using Jogos.API.Application.Dtos;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Jogos.API.Doc.Samples
 {
-    public class PlataformaResponseSample : IExamplesProvider<PlataformaEntity>
+    public class PlataformaResponseSample : IExamplesProvider<PlataformaResponseDto>
     {
-        public PlataformaEntity GetExamples()
+        public PlataformaResponseDto GetExamples()
         {
-            return new PlataformaEntity
+            return new PlataformaResponseDto
             {
                 Id = 1,
                 Nome = "PC"

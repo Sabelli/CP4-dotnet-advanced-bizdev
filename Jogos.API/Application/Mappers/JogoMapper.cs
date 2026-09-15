@@ -1,5 +1,6 @@
 using Jogos.API.Application.Dtos;
 using Jogos.API.Domain.Entities;
+using Jogos.API.Domain.Models;
 
 namespace Jogos.API.Application.Mappers
 {
@@ -39,6 +40,17 @@ namespace Jogos.API.Application.Mappers
                 Desenvolvedora = obj.Desenvolvedora,
                 Categorias = obj.Categorias,
                 Plataformas = obj.Plataformas
+            };
+        }
+
+        public static PageResultModel<IEnumerable<JogoResponseDto>> ToResponseDto(this PageResultModel<IEnumerable<JogoEntity>> obj)
+        {
+            return new PageResultModel<IEnumerable<JogoResponseDto>>
+            {
+                Data = obj.Data.Select(x => x.ToResponseDto()).ToList(),
+                Deslocamento = obj.Deslocamento,
+                RegistroRetornado = obj.RegistroRetornado,
+                TotalRegistros = obj.TotalRegistros
             };
         }
     }

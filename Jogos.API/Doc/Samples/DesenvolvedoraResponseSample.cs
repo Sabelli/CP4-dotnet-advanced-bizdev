@@ -1,13 +1,13 @@
-using Jogos.API.Domain.Entities;
+using Jogos.API.Application.Dtos;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Jogos.API.Doc.Samples
 {
-    public class DesenvolvedoraResponseSample : IExamplesProvider<DesenvolvedoraEntity>
+    public class DesenvolvedoraResponseSample : IExamplesProvider<DesenvolvedoraResponseDto>
     {
-        public DesenvolvedoraEntity GetExamples()
+        public DesenvolvedoraResponseDto GetExamples()
         {
-            return new DesenvolvedoraEntity
+            return new DesenvolvedoraResponseDto
             {
                 Id = 1,
                 Nome = "CD Projekt Red"

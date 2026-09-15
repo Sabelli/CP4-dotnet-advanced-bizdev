@@ -1,15 +1,16 @@
+using Jogos.API.Application.Dtos;
 using Jogos.API.Domain.Entities;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Jogos.API.Doc.Samples
 {
-    public class JogoResponseListSample : IExamplesProvider<IEnumerable<JogoEntity>>
+    public class JogoResponseListSample : IExamplesProvider<IEnumerable<JogoResponseDto>>
     {
-        public IEnumerable<JogoEntity> GetExamples()
+        public IEnumerable<JogoResponseDto> GetExamples()
         {
-            return new List<JogoEntity>
+            return new List<JogoResponseDto>
             {
-                new JogoEntity
+                new JogoResponseDto
                 {
                     Id = 1,
                     Nome = "The Witcher 3",
@@ -27,7 +28,7 @@ namespace Jogos.API.Doc.Samples
                         new PlataformaEntity { Id = 2, Nome = "PS5" },
                     }
                 },
-                new JogoEntity
+                new JogoResponseDto
                 {
                     Id = 2,
                     Nome = "Cyberpunk 2077",

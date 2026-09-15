@@ -1,7 +1,7 @@
 using Jogos.API.Application.Dtos;
 using Jogos.API.Application.Interfaces;
+using Jogos.API.Application.Mappers;
 using Jogos.API.Doc.Samples;
-using Jogos.API.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Swashbuckle.AspNetCore.Annotations;
@@ -32,7 +32,7 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<CategoriaEntity>))]
+        [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<CategoriaResponseDto>))]
         [SwaggerResponse(statusCode: 204, description: "Nenhuma categoria encontrada")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(CategoriaResponseListSample))]
@@ -48,7 +48,7 @@ namespace Jogos.API.Presentation.Controllers
                 if (!resultado.Data.Any())
                     return NoContent();
 
-                return Ok(resultado);
+                return Ok(resultado.ToResponseDto());
             }
             catch (Exception ex)
             {
@@ -67,7 +67,7 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Categoria retornada com sucesso", type: typeof(CategoriaEntity))]
+        [SwaggerResponse(statusCode: 200, description: "Categoria retornada com sucesso", type: typeof(CategoriaResponseDto))]
         [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(CategoriaResponseSample))]
@@ -85,7 +85,7 @@ namespace Jogos.API.Presentation.Controllers
                     return NotFound();
                 }
 
-                return Ok(categoria);
+                return Ok(categoria.ToResponseDto());
             }
             catch (Exception ex)
             {
@@ -105,7 +105,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerRequestExample(typeof(CategoriaRequestDto), typeof(CategoriaRequestSample))]
-        [SwaggerResponse(statusCode: 201, description: "Categoria criada com sucesso", type: typeof(CategoriaEntity))]
+        [SwaggerResponse(statusCode: 201, description: "Categoria criada com sucesso", type: typeof(CategoriaResponseDto))]
         [SwaggerResponse(statusCode: 409, description: "Já existe uma categoria com esse nome", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar a categoria", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 201, typeof(CategoriaCreatedSample))]
@@ -123,7 +123,7 @@ namespace Jogos.API.Presentation.Controllers
                     return Conflict($"Já existe uma categoria com o nome '{model.Nome}'.");
                 }
 
-                return CreatedAtAction(nameof(Get), new { id = categoria.Id }, categoria);
+                return CreatedAtAction(nameof(Get), new { id = categoria.Id }, categoria.ToResponseDto());
             }
             catch (Exception ex)
             {
@@ -143,7 +143,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerRequestExample(typeof(CategoriaRequestDto), typeof(CategoriaRequestSample))]
-        [SwaggerResponse(statusCode: 200, description: "Categoria editada com sucesso", type: typeof(CategoriaEntity))]
+        [SwaggerResponse(statusCode: 200, description: "Categoria editada com sucesso", type: typeof(CategoriaResponseDto))]
         [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar a categoria", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(CategoriaResponseSample))]
@@ -161,7 +161,7 @@ namespace Jogos.API.Presentation.Controllers
                     return NotFound();
                 }
 
-                return Ok(categoria);
+                return Ok(categoria.ToResponseDto());
             }
             catch (Exception ex)
             {
@@ -180,7 +180,7 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha ao deletar a categoria.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Categoria deletada com sucesso", type: typeof(CategoriaEntity))]
+        [SwaggerResponse(statusCode: 200, description: "Categoria deletada com sucesso", type: typeof(CategoriaResponseDto))]
         [SwaggerResponse(statusCode: 404, description: "Categoria não encontrada")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar a categoria", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(CategoriaResponseSample))]
@@ -198,7 +198,7 @@ namespace Jogos.API.Presentation.Controllers
                     return NotFound();
                 }
 
-                return Ok(categoria);
+                return Ok(categoria.ToResponseDto());
             }
             catch (Exception ex)
             {

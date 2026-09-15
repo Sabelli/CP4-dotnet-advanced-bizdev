@@ -1,7 +1,7 @@
 using Jogos.API.Application.Dtos;
 using Jogos.API.Application.Interfaces;
+using Jogos.API.Application.Mappers;
 using Jogos.API.Doc.Samples;
-using Jogos.API.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Swashbuckle.AspNetCore.Annotations;
@@ -32,7 +32,7 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<PlataformaEntity>))]
+        [SwaggerResponse(statusCode: 200, description: "Listagem de dados retornada com sucesso", type: typeof(IEnumerable<PlataformaResponseDto>))]
         [SwaggerResponse(statusCode: 204, description: "Nenhuma plataforma encontrada")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(PlataformaResponseListSample))]
@@ -48,7 +48,7 @@ namespace Jogos.API.Presentation.Controllers
                 if (!resultado.Data.Any())
                     return NoContent();
 
-                return Ok(resultado);
+                return Ok(resultado.ToResponseDto());
             }
             catch (Exception ex)
             {
@@ -67,7 +67,7 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha durante a consulta.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Plataforma retornada com sucesso", type: typeof(PlataformaEntity))]
+        [SwaggerResponse(statusCode: 200, description: "Plataforma retornada com sucesso", type: typeof(PlataformaResponseDto))]
         [SwaggerResponse(statusCode: 404, description: "Plataforma não encontrada")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao retornar os dados", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(PlataformaResponseSample))]
@@ -85,7 +85,7 @@ namespace Jogos.API.Presentation.Controllers
                     return NotFound();
                 }
 
-                return Ok(plataforma);
+                return Ok(plataforma.ToResponseDto());
             }
             catch (Exception ex)
             {
@@ -105,7 +105,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerRequestExample(typeof(PlataformaRequestDto), typeof(PlataformaRequestSample))]
-        [SwaggerResponse(statusCode: 201, description: "Plataforma criada com sucesso", type: typeof(PlataformaEntity))]
+        [SwaggerResponse(statusCode: 201, description: "Plataforma criada com sucesso", type: typeof(PlataformaResponseDto))]
         [SwaggerResponse(statusCode: 409, description: "Já existe uma plataforma com esse nome", type: typeof(string))]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao criar a plataforma", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 201, typeof(PlataformaCreatedSample))]
@@ -123,7 +123,7 @@ namespace Jogos.API.Presentation.Controllers
                     return Conflict($"Já existe uma plataforma com o nome '{model.Nome}'.");
                 }
 
-                return CreatedAtAction(nameof(Get), new { id = plataforma.Id }, plataforma);
+                return CreatedAtAction(nameof(Get), new { id = plataforma.Id }, plataforma.ToResponseDto());
             }
             catch (Exception ex)
             {
@@ -143,7 +143,7 @@ namespace Jogos.API.Presentation.Controllers
             """
         )]
         [SwaggerRequestExample(typeof(PlataformaRequestDto), typeof(PlataformaRequestSample))]
-        [SwaggerResponse(statusCode: 200, description: "Plataforma editada com sucesso", type: typeof(PlataformaEntity))]
+        [SwaggerResponse(statusCode: 200, description: "Plataforma editada com sucesso", type: typeof(PlataformaResponseDto))]
         [SwaggerResponse(statusCode: 404, description: "Plataforma não encontrada")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao editar a plataforma", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(PlataformaResponseSample))]
@@ -161,7 +161,7 @@ namespace Jogos.API.Presentation.Controllers
                     return NotFound();
                 }
 
-                return Ok(plataforma);
+                return Ok(plataforma.ToResponseDto());
             }
             catch (Exception ex)
             {
@@ -180,7 +180,7 @@ namespace Jogos.API.Presentation.Controllers
             * **Status 400 (Bad Request):** Ocorreu uma falha ao deletar a plataforma.
             """
         )]
-        [SwaggerResponse(statusCode: 200, description: "Plataforma deletada com sucesso", type: typeof(PlataformaEntity))]
+        [SwaggerResponse(statusCode: 200, description: "Plataforma deletada com sucesso", type: typeof(PlataformaResponseDto))]
         [SwaggerResponse(statusCode: 404, description: "Plataforma não encontrada")]
         [SwaggerResponse(statusCode: 400, description: "Ocorreu um erro ao deletar a plataforma", type: typeof(string))]
         [SwaggerResponseExample(statusCode: 200, typeof(PlataformaResponseSample))]
@@ -198,7 +198,7 @@ namespace Jogos.API.Presentation.Controllers
                     return NotFound();
                 }
 
-                return Ok(plataforma);
+                return Ok(plataforma.ToResponseDto());
             }
             catch (Exception ex)
             {

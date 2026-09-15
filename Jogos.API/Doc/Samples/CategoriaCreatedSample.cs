@@ -1,13 +1,13 @@
-using Jogos.API.Domain.Entities;
+using Jogos.API.Application.Dtos;
 using Swashbuckle.AspNetCore.Filters;
 
 namespace Jogos.API.Doc.Samples
 {
-    public class CategoriaCreatedSample : IExamplesProvider<CategoriaEntity>
+    public class CategoriaCreatedSample : IExamplesProvider<CategoriaResponseDto>
     {
-        public CategoriaEntity GetExamples()
+        public CategoriaResponseDto GetExamples()
         {
-            return new CategoriaEntity
+            return new CategoriaResponseDto
             {
                 Id = 1,
                 Nome = "RPG"
