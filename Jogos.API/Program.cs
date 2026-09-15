@@ -74,12 +74,16 @@ if (!builder.Environment.IsEnvironment("Testing"))
 {
     builder.Services.AddRateLimiter(options => {
 
-        options.AddFixedWindowLimiter(policyName: "politica_5_tentativas", opt => {
-            opt.PermitLimit = 5;
-            opt.Window = TimeSpan.FromSeconds(20);
-            opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-            opt.QueueLimit = 2;
-        });
+        options.AddPolicy("politica_5_tentativas", httpContext =>
+            RateLimitPartition.GetFixedWindowLimiter(
+                partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                factory: _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 5,
+                    Window = TimeSpan.FromSeconds(20),
+                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    QueueLimit = 2
+                }));
 
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     });
